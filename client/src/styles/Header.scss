@@ -1,0 +1,8 @@
+@import "./base.scss";
+
+header {
+  @include flexR();
+  h1 {
+    font-size: 1.2rem;
+  }
+}

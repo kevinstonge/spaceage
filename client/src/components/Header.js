@@ -1,4 +1,9 @@
+import "../styles/Header.scss";
 const Header = (props) => {
-  return <h1>spaceage</h1>;
+  return (
+    <header>
+      <h1>spaceage</h1>
+    </header>
+  );
 };
 export default Header;
