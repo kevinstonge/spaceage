@@ -1,0 +1,7 @@
+@import "./base.scss";
+
+body {
+  @include flexC();
+  background-color: $b1;
+  color: $f1;
+}

@@ -1,0 +1,21 @@
+$b1: #111;
+$b2: #171717;
+$b3: #222;
+$b4: #272727;
+$f1: #ddd;
+$f2: #d7d7d7;
+$f3: #eee;
+$f4: #e7e7e7;
+$e1: #7e7;
+$e2: #b5e;
+$e3: #e92;
+$e4: #77f;
+
+@mixin flexC {
+  display: flex;
+  flex-direction: column;
+}
+@mixin flexR {
+  display: flex;
+  flex-direction: row;
+}
