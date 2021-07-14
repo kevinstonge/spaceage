@@ -39,6 +39,13 @@ server.get("*", (req, res) => {
   if (req.path === "/") {
     res.sendFile(path.join(__dirname, "../../client/build", "index.html"));
   }
+  else {
+    res.sendFile(path.join(__dirname, "../../client/build", req.path), (err) => {
+      if (err) {
+        res.status(404).json({ message: `${req.path} not found` });
+      }
+    });
+  }
 });
 
 module.exports = server;
