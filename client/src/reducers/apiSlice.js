@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import hashCode from '../lib/hashCode.js';
 export const apiSlice = createSlice({
-  name: 'api',
+  name: 'apiData',
   initialState: {
     'null': { },
   },
@@ -16,6 +16,6 @@ export const apiSlice = createSlice({
   },
 });
 
-export const { addData } = counterSlice.actions
+export const { addData } = apiSlice.actions
 
 export default apiSlice.reducer
