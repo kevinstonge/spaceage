@@ -31,20 +31,22 @@ const corsConfig =
       };
 server.use(cors(corsConfig));
 const path = require("path");
-server.use("/users", require("./api/users/userRouter.js"));
-server.use("/data", require("./api/data/dataRouter.js"));
+server.use("/api/users", require("./api/users/userRouter.js"));
+server.use("/api/data", require("./api/data/dataRouter.js"));
 server.use("/media", express.static("../media"));
 server.use(express.static("../../client/build/"));
 server.get("*", (req, res) => {
   if (req.path === "/") {
     res.sendFile(path.join(__dirname, "../../client/build", "index.html"));
-  }
-  else {
-    res.sendFile(path.join(__dirname, "../../client/build", req.path), (err) => {
-      if (err) {
-        res.status(404).json({ message: `${req.path} not found` });
+  } else {
+    res.sendFile(
+      path.join(__dirname, "../../client/build", req.path),
+      (err) => {
+        if (err) {
+          res.status(404).json({ message: `${req.path} not found` });
+        }
       }
-    });
+    );
   }
 });
 
