@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import allActions from "../actions";
 export default function APIList(props) {
   const dispatch = useDispatch();
-  const apiList = useSelector((state) => state.apiList);
+  const fullState = useSelector((state) => state);
   useEffect(() => {
     dispatch({
       type: allActions.apiMetaDataActions.getAPIList().type,
       payload: "aaaaa",
     });
   }, [dispatch]);
-  return <>--{JSON.stringify(apiList)}--</>;
+  return <>--{JSON.stringify(fullState)}--</>;
 }
