@@ -8,7 +8,7 @@ const launchCacheObject = {
 router.get("/apis", async (req, res) => {
   //endpoint to return data about the api for building frontend API interface!
   const data = await Data.getAPIData();
-  res.status(200).json({ data });
+  res.status(200).json(data);
 });
 router.get("/endpoints/:id", async (req, res) => {
   const data = await Data.getEndpointsByAPIID(req.params.id);
