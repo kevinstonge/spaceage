@@ -5,9 +5,9 @@ import xhr from "../lib/xhr";
 
 export default function QueryParameters() {
   const dispatch = useDispatch();
-    const activeEndpoint = useSelector((state) => state.API.activeEndpoint);
-    const APIParameters = useSelector((state) => state.API.APIParameters);
-    const queryState = useSelector((state) => state.API.queryState);
+  const activeEndpoint = useSelector((state) => state.API.activeEndpoint);
+  const APIParameters = useSelector((state) => state.API.APIParameters);
+  const queryState = useSelector((state) => state.API.queryState);
   useEffect(() => {
     if (activeEndpoint && activeEndpoint.ID) {
       xhr.get(`/data/parameters/${activeEndpoint.ID}`).then((r) => {
@@ -18,9 +18,18 @@ export default function QueryParameters() {
       });
     }
   }, [activeEndpoint, dispatch]);
-    return (
-        <nav>
-            {APIParameters}
-      </nav>
-        );
+  return (
+    <>
+      {APIParameters && APIParameters.length > 0 && (
+        <form>
+          <select>
+            {APIParameters.map((param) => {
+              return <option key={`param-${param.ID}`}>{param.Name}</option>;
+            })}
+          </select>
+          <input type="text"></input>
+        </form>
+      )}
+    </>
+  );
 }

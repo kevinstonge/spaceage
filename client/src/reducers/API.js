@@ -17,6 +17,8 @@ const API = (state = initialState, action) => {
       return { ...state, APIEndpoints: action.payload };
     case actionTypes.setActiveEndpoint:
       return { ...state, activeEndpoint: action.payload };
+    case actionTypes.getAPIParameters:
+      return { ...state, APIParameters: action.payload };
     default:
       return state;
   }
