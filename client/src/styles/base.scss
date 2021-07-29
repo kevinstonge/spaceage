@@ -20,10 +20,31 @@ $e4: #77f;
   flex-direction: row;
 }
 
-button.active {
-  border: 1px solid red;
+button.nav {
+  background-color: $b3;
+  color: $f2;
+  border: none;
+  border-radius: 0.1rem;
+  cursor: pointer;
+  &.active {
+    background-color: $b1;
+    color: $e1;
+    cursor: default;
+  }
 }
 
-button.inactive {
-  border: 1px solid green;
+nav {
+  @include flexR();
+  gap: 0.2rem;
+  flex-wrap: wrap;
+  border-top: 1px dashed $b3;
+  padding-top: 0.2rem;
+}
+
+#root {
+  @include flexC();
+  gap: 0.5rem;
+  margin: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid $b3;
 }

@@ -12,11 +12,11 @@ router.get("/apis", async (req, res) => {
 });
 router.get("/endpoints/:id", async (req, res) => {
   const data = await Data.getEndpointsByAPIID(req.params.id);
-  res.status(200).json({ data });
+  res.status(200).json(data);
 });
 router.get("/parameters/:id", async (req, res) => {
   const data = await Data.getParametersByEndpointID(req.params.id);
-  res.status(200).json({ data });
+  res.status(200).json(data);
 });
 router.get("/launch", async (req, res) => {
   if (
