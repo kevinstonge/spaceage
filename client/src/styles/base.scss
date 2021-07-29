@@ -19,3 +19,11 @@ $e4: #77f;
   display: flex;
   flex-direction: row;
 }
+
+button.active {
+  border: 1px solid red;
+}
+
+button.inactive {
+  border: 1px solid green;
+}

@@ -4,11 +4,12 @@ import allActions from "../actions";
 import xhr from "../lib/xhr.js";
 export default function APIList(props) {
   const dispatch = useDispatch();
-  const apiList = useSelector((state) => state.getAPIList.apiList);
+  const apiList = useSelector((state) => state.API.APIList);
+  const activeAPI = useSelector((state) => state.API.activeAPI);
   useEffect(() => {
-    xhr.get("/data/apis").then(r=>{
+    xhr.get("/data/apis").then((r)=>{
       dispatch({
-        type: allActions.apiMetaDataActions.getAPIList().type,
+        type: allActions.APIActions.getAPIList,
         payload: r.data,
       });
     })
@@ -20,6 +21,8 @@ export default function APIList(props) {
             return (
             <button 
               key={`apiItem-${apiItem.ID}`}
+              onClick={()=>dispatch({type: allActions.APIActions.setActiveAPI, payload: apiItem})}
+              className={activeAPI && activeAPI.ID === apiItem.ID ? `active` : `inactive`}
             >
               {apiItem.Name}
             </button>);

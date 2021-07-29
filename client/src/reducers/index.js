@@ -1,8 +1,8 @@
-import getAPIList from "./getAPIMetaData";
+import API from "./API.js";
 import { combineReducers } from "redux";
 
 const rootReducer = combineReducers({
-  getAPIList,
+  API,
 });
 
 export default rootReducer;

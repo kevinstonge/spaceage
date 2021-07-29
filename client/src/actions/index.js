@@ -1,3 +1,3 @@
-import apiMetaDataActions from "./apiMetaDataActions";
-const allActions = { apiMetaDataActions };
+import APIActions from "./APIActions";
+const allActions = { APIActions };
 export default allActions;
