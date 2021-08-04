@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import allActions from "../actions";
 import xhr from "../lib/xhr.js";
 export default function APIList(props) {
@@ -20,7 +21,8 @@ export default function APIList(props) {
         <nav>
           {apiList.map((apiItem) => {
             return (
-              <button
+              <NavLink
+                to={apiItem.Name}
                 key={`apiItem-${apiItem.ID}`}
                 onClick={() =>
                   dispatch({
@@ -35,7 +37,7 @@ export default function APIList(props) {
                 }`}
               >
                 {apiItem.Name}
-              </button>
+              </NavLink>
             );
           })}
         </nav>

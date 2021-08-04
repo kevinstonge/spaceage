@@ -4,6 +4,7 @@ import "./index.css";
 import { createStore } from "redux";
 import rootReducer from "./reducers";
 import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
 
@@ -15,7 +16,9 @@ const store = createStore(
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>,
   document.getElementById("root")

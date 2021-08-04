@@ -1,8 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import xhr from "../lib/xhr";
 import allActions from "../actions";
-export default function ListData(props) {
+export default function EndpointList(props) {
   const activeAPI = useSelector((state) => state.API.activeAPI);
   const APIEndpoints = useSelector((state) => state.API.APIEndpoints);
   const activeEndpoint = useSelector((state) => state.API.activeEndpoint);
@@ -22,7 +23,8 @@ export default function ListData(props) {
       {APIEndpoints &&
         APIEndpoints.map((endpoint) => {
           return (
-            <button
+            <NavLink
+              to={`${activeAPI.Name}/${endpoint.Name}`}
               key={`endpoint-${endpoint.ID}`}
               className={`nav ${
                 activeEndpoint && activeEndpoint.ID === endpoint.ID
@@ -37,7 +39,7 @@ export default function ListData(props) {
               }}
             >
               {endpoint.Name}
-            </button>
+            </NavLink>
           );
         })}
     </nav>

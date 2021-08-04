@@ -20,12 +20,14 @@ $e4: #77f;
   flex-direction: row;
 }
 
-button.nav {
+button.nav,
+a.nav {
   background-color: $b3;
   color: $f2;
   border: none;
   border-radius: 0.1rem;
   cursor: pointer;
+  text-decoration: none;
   &.active {
     background-color: $b1;
     color: $e1;
