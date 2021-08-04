@@ -5,6 +5,8 @@ const initialState = {
     APIList: null,
     APIEndpoints: null,
     activeEndpoint: null,
+    APIParameters: null,
+    URLParameters: null,
   },
 };
 const API = (state = initialState, action) => {
@@ -19,6 +21,8 @@ const API = (state = initialState, action) => {
       return { ...state, activeEndpoint: action.payload };
     case actionTypes.getAPIParameters:
       return { ...state, APIParameters: action.payload };
+    case actionTypes.setParams:
+      return { ...state, URLParameters: action.payload };
     default:
       return state;
   }

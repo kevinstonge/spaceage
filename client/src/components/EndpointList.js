@@ -1,13 +1,15 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import xhr from "../lib/xhr";
 import allActions from "../actions";
 export default function EndpointList(props) {
   const activeAPI = useSelector((state) => state.API.activeAPI);
   const APIEndpoints = useSelector((state) => state.API.APIEndpoints);
   const activeEndpoint = useSelector((state) => state.API.activeEndpoint);
+  const URLParameters = useSelector((state) => state.API.URLParameters);
   const dispatch = useDispatch();
+  const history = useHistory();
   useEffect(() => {
     if (activeAPI && activeAPI.ID) {
       xhr.get(`/data/endpoints/${activeAPI.ID}`).then((r) => {
@@ -18,25 +20,37 @@ export default function EndpointList(props) {
       });
     }
   }, [activeAPI, dispatch]);
+  useEffect(() => {
+    if (APIEndpoints && APIEndpoints.length) {
+      if (URLParameters.endpoint) {
+        const endpointMatch = APIEndpoints.filter(
+          (endpoint) => endpoint.Name === URLParameters.endpoint
+        );
+        if (endpointMatch.length > 0) {
+          dispatch({
+            type: allActions.APIActions.setActiveEndpoint,
+            payload: endpointMatch[0],
+          });
+        } else {
+          history.push(`/${activeAPI.Name}`);
+        }
+      }
+    }
+  }, [history, dispatch, APIEndpoints]);
   return (
     <nav>
       {APIEndpoints &&
+        APIEndpoints.length > 0 &&
         APIEndpoints.map((endpoint) => {
           return (
             <NavLink
-              to={`${activeAPI.Name}/${endpoint.Name}`}
+              to={`/${activeAPI.Name}/${endpoint.Name}`}
               key={`endpoint-${endpoint.ID}`}
               className={`nav ${
                 activeEndpoint && activeEndpoint.ID === endpoint.ID
                   ? `active`
                   : `inactive`
               }`}
-              onClick={() => {
-                dispatch({
-                  type: allActions.APIActions.setActiveEndpoint,
-                  payload: endpoint,
-                });
-              }}
             >
               {endpoint.Name}
             </NavLink>
