@@ -7,6 +7,9 @@ const initialState = {
     activeEndpoint: null,
     APIParameters: null,
     URLParameters: null,
+    queries: {
+      "": {},
+    },
   },
 };
 const API = (state = initialState, action) => {
@@ -23,6 +26,14 @@ const API = (state = initialState, action) => {
       return { ...state, APIParameters: action.payload };
     case actionTypes.setParams:
       return { ...state, URLParameters: action.payload };
+    case actionTypes.setQuery:
+      return {
+        ...state,
+        queries: {
+          ...state.queries,
+          [action.payload.hash]: action.payload.data,
+        },
+      };
     default:
       return state;
   }

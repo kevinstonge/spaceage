@@ -29,8 +29,17 @@ export default function APIList(props) {
             payload: apiMatch[0],
           });
         } else {
+          dispatch({
+            type: allActions.APIActions.setActiveAPI,
+            payload: null,
+          });
           history.push("/");
         }
+      } else {
+        dispatch({
+          type: allActions.APIActions.setActiveAPI,
+          payload: null,
+        });
       }
     }
   }, [URLParameters, apiList, history, dispatch]);

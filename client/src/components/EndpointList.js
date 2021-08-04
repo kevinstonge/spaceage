@@ -32,11 +32,20 @@ export default function EndpointList(props) {
             payload: endpointMatch[0],
           });
         } else {
+          dispatch({
+            type: allActions.APIActions.setActiveEndpoint,
+            payload: null,
+          });
           history.push(`/${activeAPI.Name}`);
         }
+      } else {
+        dispatch({
+          type: allActions.APIActions.setActiveEndpoint,
+          payload: null,
+        });
       }
     }
-  }, [history, dispatch, APIEndpoints]);
+  }, [history, dispatch, APIEndpoints, URLParameters, activeAPI]);
   return (
     <nav>
       {APIEndpoints &&

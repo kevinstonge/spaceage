@@ -5,5 +5,6 @@ const APIActions = {
   setActiveEndpoint: "SET_API_ENDPOINTS",
   getAPIParameters: "GET_API_PARAMETERS",
   setParams: "SET_URL_PARAMETERS",
+  setQuery: "SET_QUERY",
 };
 export default APIActions;

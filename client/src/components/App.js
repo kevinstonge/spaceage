@@ -12,7 +12,6 @@ function App() {
   const match = useRouteMatch("/:api?/:endpoint?/:query?");
   useEffect(() => {
     dispatch({ type: allActions.APIActions.setParams, payload: match.params });
-    console.log("route changed");
   }, [match, dispatch]);
   return (
     <>
