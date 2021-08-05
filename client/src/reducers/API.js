@@ -7,9 +7,8 @@ const initialState = {
     activeEndpoint: null,
     APIParameters: null,
     URLParameters: null,
-    queries: {
-      "": {},
-    },
+    queries: { },
+    test: 3,
   },
 };
 const API = (state = initialState, action) => {
@@ -31,7 +30,7 @@ const API = (state = initialState, action) => {
         ...state,
         queries: {
           ...state.queries,
-          [action.payload.hash]: action.payload.data,
+          [action.payload.path]: action.payload.data,
         },
       };
     default:

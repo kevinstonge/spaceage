@@ -8,10 +8,10 @@ export default function QueryParameters() {
   const activeEndpoint = useSelector((state) => state.API.activeEndpoint);
   const APIParameters = useSelector((state) => state.API.APIParameters);
   const URLParameters = useSelector((state) => state.API.URLParameters);
+  const queries = useSelector((state) => state.API.queries);
   const queryPath = URLParameters
     ? `${URLParameters.api}/${URLParameters.endpoint}`
     : "";
-  const queries = useSelector((state) => state.API.queries);
   useEffect(() => {
     if (activeEndpoint && activeEndpoint.ID) {
       xhr.get(`/data/parameters/${activeEndpoint.ID}`).then((r) => {
@@ -22,28 +22,40 @@ export default function QueryParameters() {
       });
     }
   }, [activeEndpoint, dispatch]);
-  // useEffect(() => {
-  //   if (queries[queryPath]) {
-  //     console.log("exists");
-  //   } else {
-  //     dispatch({
-  //       type: allActions.APIActions.setQuery,
-  //       payload: { path: queryPath, data: {} },
-  //     });
-  //   }
-  // }, []);
+  useEffect(() => {
+      queryPath !== "" &&
+      !queryPath.includes("undefined") &&
+      dispatch({
+        type: allActions.APIActions.setQuery,
+        payload: { path: queryPath, data: {} },
+      });
+  }, [queryPath, dispatch]);
+  const submitHandler = () => { console.log('submit'); }
   return (
     <>
       {APIParameters && APIParameters.length > 0 && (
-        <form>
+        <form 
+          onSubmit={
+            (e)=>{
+              e.preventDefault();
+              submitHandler();
+            }
+          }
+          onChange={
+            (e)=>{
+              console.log(e);
+            }
+          }
+        >
           <select>
             {APIParameters.map((param) => {
               return <option key={`param-${param.ID}`}>{param.Name}</option>;
             })}
           </select>
-          <input type="text"></input>
+          <input type="text" ></input>
         </form>
       )}
+      <p>{JSON.stringify(queries)}</p>
     </>
   );
 }
