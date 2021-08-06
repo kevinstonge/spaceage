@@ -89,7 +89,7 @@ export default function QueryParameters() {
     })
   }
   const onSubmit = () => {
-    const queryParameters = Object.entries(queries[queryPath]).filter((entry)=>entry[1]!=="").map(entry=>`${entry[0]}=${entry[1]}`).join('&');
+    const queryParameters = Object.entries(queries[queryPath]).filter((entry)=>entry[1]!=="").map(entry=>`${entry[0]}=${entry[1]}`).sort().join('&');
     dispatch({
       type: allActions.APIActions.setQueryResults,
       payload: {
@@ -101,7 +101,6 @@ export default function QueryParameters() {
     });
     xhr.get(`/data/${queryPath}/?${queryParameters}`)
       .then((r)=>{
-        console.log(r);
         if (r.data) {
           dispatch({
             type: allActions.APIActions.setQueryResults,

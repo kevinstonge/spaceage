@@ -48,7 +48,7 @@ const API = (state = initialState, action) => {
           [action.payload.queryPath]: {
             queryPath: action.payload.queryPath,
             query: action.payload.query,
-            queryResult: action.payload.data,
+            queryResult: action.payload.queryResult,
             status: action.payload.status || "",
           },
         }

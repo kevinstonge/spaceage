@@ -4,10 +4,7 @@ const axios = require('axios');
 const Data = require("./dataModel.js");
 const db = require('../../../data/dbConfig.js');
 
-const launchCacheObject = {
-  data: null,
-  updated: null,
-};
+const launchCacheObject = { };
 router.get("/apis", async (req, res) => {
   //endpoint to return data about the api for building frontend API interface!
   const data = await Data.getAPIData();
@@ -35,18 +32,19 @@ router.get("/Launch/*", async (req, res) => {
       const reqURL = `${api[0].DevURL}${endpoint[0].Path}${reqURLArray.splice(2).join('')}`;
       console.log(reqURL);
       if (
-        launchCacheObject.updated === null ||
-        Date.now() > launchCacheObject.updated + 100 * 60 * 60
+        !launchCacheObject[reqURL] || Date.now() > launchCacheObject[reqURL].updated + 100 * 60 * 60
       ) {
         try {
           console.log("refreshing cached data");
           axios.get(`${reqURL}&format=json`)
             .then(r=>{
-              launchCacheObject.data = r.data.results;
-              launchCacheObject.updated = Date.now();
+              launchCacheObject[reqURL] = { };
+              launchCacheObject[reqURL].data = r.data.results;
+              launchCacheObject[reqURL].updated = Date.now();
               res.status(200).json({ ...r.data });
             })
             .catch(e=>{
+              console.log(e);
               res.status(500).json({message: "error communicating with thespacedevs API", e})
             });
         } catch (err) {
@@ -54,7 +52,7 @@ router.get("/Launch/*", async (req, res) => {
         }
         
       } else {
-        res.status(200).json({ data: launchCacheObject.data });
+        res.status(200).json({ data: launchCacheObject[reqURL].data });
       }
 
     } else {
