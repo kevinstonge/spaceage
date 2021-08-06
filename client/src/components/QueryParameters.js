@@ -85,6 +85,10 @@ export default function QueryParameters() {
       payload: { path: queryPath, data: newQueryData }
     })
   }
+  const onSubmit = () => {
+    // const 
+    console.log(queries[queryPath]);
+  }
   return (
     <>
       {queries && queries[queryPath] && activeEndpoint && EndpointParameters && EndpointParameters[activeEndpoint.Name] && (
@@ -92,6 +96,7 @@ export default function QueryParameters() {
           onSubmit={
             (e)=>{
               e.preventDefault();
+              onSubmit();
             }
           }
         >
@@ -115,14 +120,14 @@ export default function QueryParameters() {
                   })}
                 </select>
                 <input type="text" value={value} onChange={(e)=>changeValue(e)} id={`${parameter}-input`}></input>
-                { index > 0 && <button id={`${parameter}-remove`} onClick={(e)=>{removeField(e)}}>-</button> }
+                { index > 0 && <button id={`${parameter}-remove`} onClick={(e)=>{e.preventDefault(); removeField(e);}}>-</button> }
                 </div>
               )
           })}
           { Object.keys(queries[queryPath]).length < EndpointParameters[activeEndpoint.Name].length && (
-            <p><button onClick={()=>{addField()}}>+</button></p>
+            <p><button onClick={(e)=>{e.preventDefault(); addField();}}>+</button></p>
           ) }
-          <p><button>Search</button></p>
+          <p><button type="submit">Search</button></p>
         </form>
       )}
       <p>{JSON.stringify(queries)}</p>
