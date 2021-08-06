@@ -48,6 +48,16 @@ export default function QueryParameters() {
     }
   }, [queries, queryPath, EndpointParameters, activeEndpoint, dispatch])
   const submitHandler = () => { console.log('submit'); }
+  const addField = () => {
+    const countExistingFields = Object.keys(queries[queryPath]).length;
+    dispatch({
+      type: allActions.APIActions.setQuery,
+      payload: { path: queryPath, data: { 
+        ...queries[queryPath], 
+        [EndpointParameters[activeEndpoint.Name][countExistingFields].Name]: "",
+      }}
+    })
+  }
   return (
     <>
       {queries && queries[queryPath] && activeEndpoint && EndpointParameters && EndpointParameters[activeEndpoint.Name] && (
@@ -66,18 +76,28 @@ export default function QueryParameters() {
                 <div key={`queryItem-${index}`}>
                 <select defaultValue={parameter}>
                   {EndpointParameters[activeEndpoint.Name].map((param) => {
+                    console.log(`parameter: ${parameter}`);
+                    console.log(`param.Name: ${param.Name}`);
+                    const disabled = Object.keys(queries[queryPath]).includes(param.Name) && parameter !== param.Name;
                     return (
                       <option 
                         key={`paramID-${param.Parameter_ID}`}
+                        disabled={disabled}
                       >
                         {param.Name}
-                      </option>);
+                      </option>
+                    );
                   })}
                 </select>
                 <input type="text" value={value} onChange={()=>console.log('change')}></input>
+                { index > 0 && <button>-</button> }
                 </div>
               )
           })}
+          { Object.keys(queries[queryPath]).length < EndpointParameters[activeEndpoint.Name].length && (
+            <p><button onClick={()=>{addField()}}>+</button></p>
+          ) }
+          <p><button>Search</button></p>
         </form>
       )}
       <p>{JSON.stringify(queries)}</p>
