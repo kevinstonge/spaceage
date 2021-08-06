@@ -38,18 +38,19 @@ export default function QueryParameters() {
     }
   }, [queries, queryPath, dispatch]);
 
-  //if query data is null, choose one APIParameter to use by default (search, name, id):
+  //if query data is null, add the first APIParameter to state to use by default:
   useEffect(()=>{
     if (queries && queries[queryPath] === null && activeEndpoint && EndpointParameters && EndpointParameters[activeEndpoint.Name] && EndpointParameters[activeEndpoint.Name].length > 0) {
-      console.log(EndpointParameters[activeEndpoint.Name]);
-      
+      dispatch({
+        type: allActions.APIActions.setQuery,
+        payload: { path: queryPath, data: { [EndpointParameters[activeEndpoint.Name][0].Name]: "" } },
+      })
     }
   }, [queries, queryPath, EndpointParameters, activeEndpoint, dispatch])
-
   const submitHandler = () => { console.log('submit'); }
   return (
     <>
-      {activeEndpoint && EndpointParameters && EndpointParameters[activeEndpoint.Name] && (
+      {queries && queries[queryPath] && activeEndpoint && EndpointParameters && EndpointParameters[activeEndpoint.Name] && (
         <form 
           onSubmit={
             (e)=>{
@@ -58,12 +59,25 @@ export default function QueryParameters() {
             }
           }
         >
-          <select>
-            {EndpointParameters[activeEndpoint.Name].map((param) => {
-              return <option key={`param-${param.ID}`}>{param.Name}</option>;
-            })}
-          </select>
-          <input type="text" ></input>
+          {
+            Object.entries(queries[queryPath]).map((entries, index)=>{
+              const [parameter, value] = entries;
+              return(
+                <div key={`queryItem-${index}`}>
+                <select defaultValue={parameter}>
+                  {EndpointParameters[activeEndpoint.Name].map((param) => {
+                    return (
+                      <option 
+                        key={`paramID-${param.Parameter_ID}`}
+                      >
+                        {param.Name}
+                      </option>);
+                  })}
+                </select>
+                <input type="text" value={value} onChange={()=>console.log('change')}></input>
+                </div>
+              )
+          })}
         </form>
       )}
       <p>{JSON.stringify(queries)}</p>
