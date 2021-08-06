@@ -3,7 +3,6 @@ const router = require("express").Router();
 const axios = require('axios');
 const Data = require("./dataModel.js");
 const db = require('../../../data/dbConfig.js');
-const { urlencoded } = require("express");
 
 const launchCacheObject = {
   data: null,
@@ -31,11 +30,32 @@ router.get("/Launch/*", async (req, res) => {
     // const endpointList = await db('Endpoints').where('API_ID',api.ID);
     const endpointList = await db('Endpoints').where('API_ID',api[0].ID);
     const endpointName = decodeURI(reqURLArray[1]);
-    console.log(endpointName);
     const endpoint = endpointList.filter(endpoint=>endpoint.Name===endpointName);
     if (endpoint[0]) {
       const reqURL = `${api[0].DevURL}${endpoint[0].Path}${reqURLArray.splice(2).join('')}`;
       console.log(reqURL);
+      if (
+        launchCacheObject.updated === null ||
+        Date.now() > launchCacheObject.updated + 100 * 60 * 60
+      ) {
+        try {
+          console.log("refreshing cached data");
+          axios.get(`${reqURL}&format=json`)
+            .then(r=>{
+              launchCacheObject.data = r.data.results;
+              launchCacheObject.updated = Date.now();
+              res.status(200).json({ ...r.data });
+            })
+            .catch(e=>{
+              res.status(500).json({message: "error communicating with thespacedevs API", e})
+            });
+        } catch (err) {
+          res.status(500).json({ message: "server error", err });
+        }
+        
+      } else {
+        res.status(200).json({ data: launchCacheObject.data });
+      }
 
     } else {
       console.log('bad endpoint');
@@ -44,23 +64,6 @@ router.get("/Launch/*", async (req, res) => {
   }
   else { 
     console.log('invalid api');
-  }
-  if (
-    launchCacheObject.updated ||
-    Date.now() > launchCacheObject.updated + 100 * 60 * 60
-  ) {
-    try {
-      console.log("refreshing cached data");
-      const data = await axios.get(`req.url`);
-      launchCacheObject.data = data.data;
-      launchCacheObject.updated = Date.now();
-      res.status(200).json({ data: data.data });
-    } catch (err) {
-      res.status(500).json({ message: "server error", err });
-    }
-    
-  } else {
-    res.status(200).json({ data: launchCacheObject.data });
   }
 });
 
