@@ -66,6 +66,25 @@ export default function QueryParameters() {
       payload: { path: queryPath, data: newQueryData, },
     })
   }
+  const changeFieldName = (e) => {
+    const oldFieldName = e.target.id.substring(0,e.target.id.length - 7);
+    const newFieldName = e.target.value;
+    const newQueryData = queries[queryPath];
+    delete newQueryData[oldFieldName];
+    newQueryData[newFieldName] = "";
+    dispatch({
+      type: allActions.APIActions.setQuery,
+      payload: { path: queryPath, data: newQueryData }
+    })
+  }
+  const changeValue = (e) => {
+    const newQueryData = queries[queryPath];
+    newQueryData[e.target.id.substring(0,e.target.id.length - 6)] = e.target.value;
+    dispatch({
+      type: allActions.APIActions.setQuery,
+      payload: { path: queryPath, data: newQueryData }
+    })
+  }
   return (
     <>
       {queries && queries[queryPath] && activeEndpoint && EndpointParameters && EndpointParameters[activeEndpoint.Name] && (
@@ -81,7 +100,7 @@ export default function QueryParameters() {
               const [parameter, value] = entries;
               return(
                 <div key={`queryItem-${index}`}>
-                <select defaultValue={parameter} id={`${parameter}-select`}>
+                <select value={parameter} id={`${parameter}-select`} onChange={(e)=>changeFieldName(e)}>
                   {EndpointParameters[activeEndpoint.Name].map((param) => {
                     const disabled = Object.keys(queries[queryPath]).includes(param.Name) && parameter !== param.Name;
                     return (
@@ -95,7 +114,7 @@ export default function QueryParameters() {
                     );
                   })}
                 </select>
-                <input type="text" value={value} onChange={()=>console.log('change')} id={`${parameter}-input`}></input>
+                <input type="text" value={value} onChange={(e)=>changeValue(e)} id={`${parameter}-input`}></input>
                 { index > 0 && <button id={`${parameter}-remove`} onClick={(e)=>{removeField(e)}}>-</button> }
                 </div>
               )
