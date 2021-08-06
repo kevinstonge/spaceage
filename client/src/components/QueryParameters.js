@@ -47,7 +47,6 @@ export default function QueryParameters() {
       })
     }
   }, [queries, queryPath, EndpointParameters, activeEndpoint, dispatch])
-  const submitHandler = () => { console.log('submit'); }
   const addField = () => {
     const countExistingFields = Object.keys(queries[queryPath]).length;
     dispatch({
@@ -58,6 +57,15 @@ export default function QueryParameters() {
       }}
     })
   }
+  const removeField = (e) => {
+    const fieldName = e.target.id.substring(0,e.target.id.length - 7);
+    const newQueryData = queries[queryPath];
+    delete newQueryData[fieldName];
+    dispatch({
+      type: allActions.APIActions.setQuery,
+      payload: { path: queryPath, data: newQueryData, },
+    })
+  }
   return (
     <>
       {queries && queries[queryPath] && activeEndpoint && EndpointParameters && EndpointParameters[activeEndpoint.Name] && (
@@ -65,7 +73,6 @@ export default function QueryParameters() {
           onSubmit={
             (e)=>{
               e.preventDefault();
-              submitHandler();
             }
           }
         >
@@ -74,23 +81,22 @@ export default function QueryParameters() {
               const [parameter, value] = entries;
               return(
                 <div key={`queryItem-${index}`}>
-                <select defaultValue={parameter}>
+                <select defaultValue={parameter} id={`${parameter}-select`}>
                   {EndpointParameters[activeEndpoint.Name].map((param) => {
-                    console.log(`parameter: ${parameter}`);
-                    console.log(`param.Name: ${param.Name}`);
                     const disabled = Object.keys(queries[queryPath]).includes(param.Name) && parameter !== param.Name;
                     return (
                       <option 
                         key={`paramID-${param.Parameter_ID}`}
                         disabled={disabled}
+                        id={`${param.Name}-option`}
                       >
                         {param.Name}
                       </option>
                     );
                   })}
                 </select>
-                <input type="text" value={value} onChange={()=>console.log('change')}></input>
-                { index > 0 && <button>-</button> }
+                <input type="text" value={value} onChange={()=>console.log('change')} id={`${parameter}-input`}></input>
+                { index > 0 && <button id={`${parameter}-remove`} onClick={(e)=>{removeField(e)}}>-</button> }
                 </div>
               )
           })}
