@@ -7,6 +7,7 @@ import APIList from "./APIList.js";
 import EndpointList from "./EndpointList.js";
 import QueryParameters from "./QueryParameters.js";
 import allActions from "../actions";
+import QueryResults from "./QueryResults";
 function App() {
   const dispatch = useDispatch();
   const match = useRouteMatch("/:api?/:endpoint?/:query?");
@@ -19,6 +20,7 @@ function App() {
       <APIList />
       <EndpointList />
       <QueryParameters />
+      <QueryResults />
     </>
   );
 }

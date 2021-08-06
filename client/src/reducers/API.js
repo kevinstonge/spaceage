@@ -8,7 +8,7 @@ const initialState = {
     EndpointParameters: null,
     URLParameters: null,
     queries: { },
-    test: 3,
+    queryResults: { },
   },
 };
 const API = (state = initialState, action) => {
@@ -40,6 +40,19 @@ const API = (state = initialState, action) => {
           [action.payload.path]: action.payload.data,
         },
       };
+    case actionTypes.setQueryResults:
+      return { 
+        ...state,
+        queryResults: {
+          ...state.queryResults,
+          [action.payload.queryPath]: {
+            queryPath: action.payload.queryPath,
+            query: action.payload.query,
+            queryResult: action.payload.data,
+            status: action.payload.status || "",
+          },
+        }
+      }
     default:
       return state;
   }

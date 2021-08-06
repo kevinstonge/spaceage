@@ -48,12 +48,15 @@ export default function QueryParameters() {
     }
   }, [queries, queryPath, EndpointParameters, activeEndpoint, dispatch])
   const addField = () => {
-    const countExistingFields = Object.keys(queries[queryPath]).length;
+    const firstUnusedField = EndpointParameters[activeEndpoint.Name].filter(parameter=>
+      !Object.keys(queries[queryPath]).includes(parameter.Name)
+    )[0].Name;
+    console.log(firstUnusedField);
     dispatch({
       type: allActions.APIActions.setQuery,
       payload: { path: queryPath, data: { 
         ...queries[queryPath], 
-        [EndpointParameters[activeEndpoint.Name][countExistingFields].Name]: "",
+        [firstUnusedField]: "",
       }}
     })
   }
@@ -86,8 +89,31 @@ export default function QueryParameters() {
     })
   }
   const onSubmit = () => {
-    // const 
-    console.log(queries[queryPath]);
+    const queryParameters = Object.entries(queries[queryPath]).filter((entry)=>entry[1]!=="").map(entry=>`${entry[0]}=${entry[1]}`).join('&');
+    dispatch({
+      type: allActions.APIActions.setQueryResults,
+      payload: {
+        queryPath,
+        query: queryParameters,
+        queryResult: [],
+        status: "searching",
+      },
+    });
+    xhr.get(`/data/${queryPath}/?${queryParameters}`)
+      .then((r)=>{
+        console.log(r);
+        if (r.data) {
+          dispatch({
+            type: allActions.APIActions.setQueryResults,
+            payload: {
+              queryPath,
+              query: queryParameters,
+              queryResult: r.data,
+              status: "success",
+            }
+          })
+        }
+      })
   }
   return (
     <>
