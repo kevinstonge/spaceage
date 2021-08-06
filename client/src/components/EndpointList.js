@@ -11,19 +11,30 @@ export default function EndpointList(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    if (activeAPI && activeAPI.ID) {
+    if (URLParameters && URLParameters.endpoint && APIEndpoints && APIEndpoints[URLParameters.api]) {
+      const endpointMatch = APIEndpoints[URLParameters.api].filter((endpoint) => endpoint.Name === URLParameters.endpoint);
+      if (endpointMatch.length > 0) {
+        dispatch({type: allActions.APIActions.setActiveEndpoint, payload: URLParameters.endpoint })
+      } else {
+        dispatch({ type: allActions.APIActions.setActiveEndpoint, payload: null});
+        history.push(`${URLParameters.api}/`);
+      }
+    }
+  },[APIEndpoints, URLParameters, dispatch, history])
+  useEffect(() => {
+    if (activeAPI && activeAPI.ID && (!APIEndpoints || !APIEndpoints[activeAPI.Name])) {
       xhr.get(`/data/endpoints/${activeAPI.ID}`).then((r) => {
         dispatch({
           type: allActions.APIActions.getAPIEndpoints,
-          payload: r.data,
+          payload: { api: activeAPI.Name, parameters: r.data }
         });
       });
     }
-  }, [activeAPI, dispatch]);
+  }, [activeAPI, APIEndpoints, dispatch]);
   useEffect(() => {
-    if (APIEndpoints && APIEndpoints.length) {
+    if (APIEndpoints && activeAPI && APIEndpoints[activeAPI.Name] && APIEndpoints[activeAPI.Name].length > 0) {
       if (URLParameters.endpoint) {
-        const endpointMatch = APIEndpoints.filter(
+        const endpointMatch = APIEndpoints[activeAPI.Name].filter(
           (endpoint) => endpoint.Name === URLParameters.endpoint
         );
         if (endpointMatch.length > 0) {
@@ -49,8 +60,9 @@ export default function EndpointList(props) {
   return (
     <nav>
       {APIEndpoints &&
-        APIEndpoints.length > 0 &&
-        APIEndpoints.map((endpoint) => {
+        APIEndpoints[activeAPI.Name] &&
+        APIEndpoints[activeAPI.Name].length > 0 &&
+        APIEndpoints[activeAPI.Name].map((endpoint) => {
           return (
             <NavLink
               to={`/${activeAPI.Name}/${endpoint.Name}`}

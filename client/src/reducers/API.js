@@ -5,7 +5,7 @@ const initialState = {
     APIList: null,
     APIEndpoints: null,
     activeEndpoint: null,
-    APIParameters: null,
+    EndpointParameters: null,
     URLParameters: null,
     queries: { },
     test: 3,
@@ -18,11 +18,18 @@ const API = (state = initialState, action) => {
     case actionTypes.setActiveAPI:
       return { ...state, activeAPI: action.payload };
     case actionTypes.getAPIEndpoints:
-      return { ...state, APIEndpoints: action.payload };
+      return { 
+        ...state, 
+        APIEndpoints: {
+          ...state.APIEndpoints,
+          [action.payload.api]: action.payload.parameters,
+        } };
     case actionTypes.setActiveEndpoint:
       return { ...state, activeEndpoint: action.payload };
-    case actionTypes.getAPIParameters:
-      return { ...state, APIParameters: action.payload };
+    case actionTypes.getEndpointParameters:
+      return { ...state, EndpointParameters: {
+        [action.payload.endpoint]: action.payload.parameters,
+      } };
     case actionTypes.setParams:
       return { ...state, URLParameters: action.payload };
     case actionTypes.setQuery:
