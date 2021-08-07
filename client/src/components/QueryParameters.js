@@ -155,7 +155,6 @@ export default function QueryParameters() {
           <p><button type="submit">Search</button></p>
         </form>
       )}
-      <p>{JSON.stringify(queries)}</p>
     </>
   );
 }

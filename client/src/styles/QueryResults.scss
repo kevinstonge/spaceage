@@ -1,0 +1,12 @@
+@import "./base.scss";
+
+.queryResults {
+  @include flexC();
+  gap: 0.5rem;
+}
+.resultCard {
+  background-color: $b2;
+  padding: 0.25rem;
+  @include flexC();
+  gap: 0.25rem;
+}
