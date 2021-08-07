@@ -39,7 +39,7 @@ router.get("/Launch/*", async (req, res) => {
           axios.get(`${reqURL}&format=json`)
             .then(r=>{
               launchCacheObject[reqURL] = { };
-              launchCacheObject[reqURL].data = r.data.results;
+              launchCacheObject[reqURL].data = {...r.data};
               launchCacheObject[reqURL].updated = Date.now();
               res.status(200).json({ ...r.data });
             })
@@ -52,7 +52,7 @@ router.get("/Launch/*", async (req, res) => {
         }
         
       } else {
-        res.status(200).json({ data: launchCacheObject[reqURL].data });
+        res.status(200).json({ ...launchCacheObject[reqURL].data });
       }
 
     } else {
