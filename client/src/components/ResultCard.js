@@ -3,9 +3,9 @@ export default function ResultCard(props) {
     <div className="resultCard">
       {Object.entries(props.data).map((result,idx)=>{
         if (typeof result[1] === "object") {
-          return(<p key={`${result[0]}-${idx}`}>[object]</p>);
+          return(<p key={`${result[0]}-${idx}`}>{result[0]}: [object]</p>);
         } else {
-          return(<p key={`${result[0]}-${idx}`}>{`${result[0]}-${result[1]}`}</p>);
+          return(<p key={`${result[0]}-${idx}`}>{`${result[0]}: ${result[1]}`}</p>);
         }
 
       })}
