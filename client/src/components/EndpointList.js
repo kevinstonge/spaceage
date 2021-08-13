@@ -11,30 +11,48 @@ export default function EndpointList(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    if (URLParameters && URLParameters.endpoint && APIEndpoints && APIEndpoints[URLParameters.api]) {
-      const endpointMatch = APIEndpoints[URLParameters.api].filter((endpoint) => endpoint.Name === URLParameters.endpoint);
+    if (
+      URLParameters &&
+      URLParameters.endpoint &&
+      APIEndpoints &&
+      APIEndpoints[URLParameters.api]
+    ) {
+      const endpointMatch = APIEndpoints[URLParameters.api].filter(
+        (endpoint) => endpoint.Name === URLParameters.endpoint
+      );
       if (endpointMatch.length > 0) {
-        dispatch({type: allActions.APIActions.setActiveEndpoint, payload: URLParameters.endpoint })
+        dispatch({
+          type: allActions.APIActions.setActiveEndpoint,
+          payload: URLParameters.endpoint,
+        });
       } else {
-        dispatch({ type: allActions.APIActions.setActiveEndpoint, payload: null});
+        dispatch({
+          type: allActions.APIActions.setActiveEndpoint,
+          payload: null,
+        });
         history.push(`${URLParameters.api}/`);
       }
     }
-  },[APIEndpoints, URLParameters, dispatch, history])
+  }, [APIEndpoints, URLParameters, dispatch, history]);
   useEffect(() => {
-    if (activeAPI && activeAPI.ID && (!APIEndpoints || !APIEndpoints[activeAPI.Name])) {
-      xhr.get(`/data/endpoints/${activeAPI.ID}`).then((r) => {
+    if (activeAPI && (!APIEndpoints || !APIEndpoints[activeAPI])) {
+      xhr.get(`/data/endpoints/${activeAPI}`).then((r) => {
         dispatch({
           type: allActions.APIActions.getAPIEndpoints,
-          payload: { api: activeAPI.Name, parameters: r.data }
+          payload: { api: activeAPI, parameters: r.data },
         });
       });
     }
   }, [activeAPI, APIEndpoints, dispatch]);
   useEffect(() => {
-    if (APIEndpoints && activeAPI && APIEndpoints[activeAPI.Name] && APIEndpoints[activeAPI.Name].length > 0) {
+    if (
+      APIEndpoints &&
+      activeAPI &&
+      APIEndpoints[activeAPI] &&
+      APIEndpoints[activeAPI].length > 0
+    ) {
       if (URLParameters.endpoint) {
-        const endpointMatch = APIEndpoints[activeAPI.Name].filter(
+        const endpointMatch = APIEndpoints[activeAPI].filter(
           (endpoint) => endpoint.Name === URLParameters.endpoint
         );
         if (endpointMatch.length > 0) {
@@ -47,7 +65,7 @@ export default function EndpointList(props) {
             type: allActions.APIActions.setActiveEndpoint,
             payload: null,
           });
-          history.push(`/${activeAPI.Name}`);
+          history.push(`/${activeAPI}`);
         }
       } else {
         dispatch({
@@ -57,15 +75,16 @@ export default function EndpointList(props) {
       }
     }
   }, [history, dispatch, APIEndpoints, URLParameters, activeAPI]);
+  // console.log(APIEndpoints);
   return (
     <nav>
       {APIEndpoints &&
-        APIEndpoints[activeAPI.Name] &&
-        APIEndpoints[activeAPI.Name].length > 0 &&
-        APIEndpoints[activeAPI.Name].map((endpoint) => {
+        APIEndpoints[activeAPI] &&
+        APIEndpoints[activeAPI].length > 0 &&
+        APIEndpoints[activeAPI].map((endpoint) => {
           return (
             <NavLink
-              to={`/${activeAPI.Name}/${endpoint.Name}`}
+              to={`/${activeAPI}/${endpoint.Name}`}
               key={`endpoint-${endpoint.ID}`}
               className={`nav ${
                 activeEndpoint && activeEndpoint.ID === endpoint.ID

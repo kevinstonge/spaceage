@@ -5,22 +5,24 @@ import allActions from "../actions";
 import xhr from "../lib/xhr.js";
 export default function APIList(props) {
   const dispatch = useDispatch();
-  const apiList = useSelector((state) => state.API.APIList);
+  const apiSwagger = useSelector((state) => state.API.APISwagger);
   const activeAPI = useSelector((state) => state.API.activeAPI);
   const URLParameters = useSelector((state) => state.API.URLParameters);
   const history = useHistory();
   useEffect(() => {
     xhr.get("/data/apis").then((r) => {
       dispatch({
-        type: allActions.APIActions.getAPIList,
-        payload: r.data.data,
+        type: allActions.APIActions.getAPISwagger,
+        payload: r.data,
       });
     });
   }, [dispatch]);
   useEffect(() => {
-    if (apiList && apiList.length) {
+    if (apiSwagger && apiSwagger.paths) {
       if (URLParameters.api) {
-        const apiMatch = apiList.filter((api) => api === URLParameters.api);
+        const apiMatch = Object.keys(apiSwagger.paths).filter(
+          (api) => api === URLParameters.api
+        );
         if (apiMatch.length > 0) {
           dispatch({
             type: allActions.APIActions.setActiveAPI,
@@ -40,26 +42,35 @@ export default function APIList(props) {
         });
       }
     }
-  }, [URLParameters, apiList, history, dispatch]);
+  }, [URLParameters, apiSwagger, history, dispatch]);
+  // const apiPaths = apiSwagger
+  //   ? Object.keys(apiSwagger.paths).filter(
+  //       (path) => path.split("/").length === 1
+  //     )
+  //   : null;
+  // console.log(apiPaths);
+  apiSwagger?.paths && console.log(Object.keys(apiSwagger.paths));
   return (
     <>
-      {apiList && apiList.length > 0 && (
+      {apiSwagger?.paths && (
         <nav>
-          {apiList.map((apiItem, index) => {
-            return (
-              <NavLink
-                to={`/${apiItem}`}
-                key={`apiItem-${index}`}
-                className={`nav ${
-                  activeAPI && activeAPI.Name === apiItem
-                    ? `active`
-                    : `inactive`
-                }`}
-              >
-                {apiItem}
-              </NavLink>
-            );
-          })}
+          {Object.keys(apiSwagger.paths)
+            .filter((p) => p.split("/").length === 1)
+            .map((apiItem, index) => {
+              return (
+                <NavLink
+                  to={`/${apiItem}`}
+                  key={`apiItem-${index}`}
+                  className={`nav ${
+                    activeAPI && activeAPI.Name === apiItem
+                      ? `active`
+                      : `inactive`
+                  }`}
+                >
+                  {apiItem}
+                </NavLink>
+              );
+            })}
         </nav>
       )}
     </>
