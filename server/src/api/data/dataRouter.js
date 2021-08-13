@@ -4,12 +4,18 @@ const axios = require("axios");
 const Data = require("./dataModel.js");
 const db = require("../../../data/dbConfig.js");
 const APIMetaData = require("../../../data/APIMetaData/APIMetaData.js");
-console.log(APIMetaData[0].endpoints);
+const swagger = require("../../../data/APIMetaData/spacedevsSwagger.js");
+// console.log(APIMetaData[0].endpoints);
 const launchCacheObject = {};
 router.get("/apis", async (req, res) => {
   //endpoint to return data about the api for building frontend API interface!
-  const data = await Data.getAPIData();
-  res.status(200).json(data);
+  //old method:
+  // const data = await Data.getAPIData();
+  //needs ID, Name, URL, DevURL
+  const data = Array.from(
+    new Set(Object.keys(swagger.paths).map((path) => path.split("/")[1]))
+  );
+  res.status(200).json({ data });
 });
 router.get("/endpoints/:id", async (req, res) => {
   const data = await Data.getEndpointsByAPIID(req.params.id);

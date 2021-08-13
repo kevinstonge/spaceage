@@ -13,16 +13,14 @@ export default function APIList(props) {
     xhr.get("/data/apis").then((r) => {
       dispatch({
         type: allActions.APIActions.getAPIList,
-        payload: r.data,
+        payload: r.data.data,
       });
     });
   }, [dispatch]);
   useEffect(() => {
     if (apiList && apiList.length) {
       if (URLParameters.api) {
-        const apiMatch = apiList.filter(
-          (api) => api.Name === URLParameters.api
-        );
+        const apiMatch = apiList.filter((api) => api === URLParameters.api);
         if (apiMatch.length > 0) {
           dispatch({
             type: allActions.APIActions.setActiveAPI,
@@ -47,18 +45,18 @@ export default function APIList(props) {
     <>
       {apiList && apiList.length > 0 && (
         <nav>
-          {apiList.map((apiItem) => {
+          {apiList.map((apiItem, index) => {
             return (
               <NavLink
-                to={`/${apiItem.Name}`}
-                key={`apiItem-${apiItem.ID}`}
+                to={`/${apiItem}`}
+                key={`apiItem-${index}`}
                 className={`nav ${
-                  activeAPI && activeAPI.ID === apiItem.ID
+                  activeAPI && activeAPI.Name === apiItem
                     ? `active`
                     : `inactive`
                 }`}
               >
-                {apiItem.Name}
+                {apiItem}
               </NavLink>
             );
           })}
