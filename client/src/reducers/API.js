@@ -4,7 +4,7 @@ const initialState = {
     activeAPI: null,
     APISwagger: null,
     APIEndpoints: null,
-    activeEndpoint: null,
+    activeEndpoints: null,
     EndpointParameters: null,
     URLParameters: null,
     queries: {},
@@ -26,7 +26,13 @@ const API = (state = initialState, action) => {
         },
       };
     case actionTypes.setActiveEndpoint:
-      return { ...state, activeEndpoint: action.payload };
+      return {
+        ...state,
+        activeEndpoints: {
+          ...state.activeEndpoints,
+          [action.payload.apiName]: action.payload.endpoint,
+        },
+      };
     case actionTypes.getEndpointParameters:
       return {
         ...state,

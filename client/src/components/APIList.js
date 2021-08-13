@@ -21,12 +21,12 @@ export default function APIList(props) {
     if (apiSwagger && apiSwagger.paths) {
       if (URLParameters.api) {
         const apiMatch = Object.keys(apiSwagger.paths).filter(
-          (api) => api === URLParameters.api
+          (api) => api.split("/")[1] === URLParameters.api
         );
         if (apiMatch.length > 0) {
           dispatch({
             type: allActions.APIActions.setActiveAPI,
-            payload: apiMatch[0],
+            payload: apiMatch[0].split("/")[1],
           });
         } else {
           dispatch({
@@ -43,31 +43,32 @@ export default function APIList(props) {
       }
     }
   }, [URLParameters, apiSwagger, history, dispatch]);
-  // const apiPaths = apiSwagger
-  //   ? Object.keys(apiSwagger.paths).filter(
-  //       (path) => path.split("/").length === 1
-  //     )
-  //   : null;
-  // console.log(apiPaths);
-  apiSwagger?.paths && console.log(Object.keys(apiSwagger.paths));
+
   return (
     <>
       {apiSwagger?.paths && (
         <nav>
           {Object.keys(apiSwagger.paths)
-            .filter((p) => p.split("/").length === 1)
+            .filter((path) => {
+              const split = path.split("/");
+              if (split.length === 3) {
+                return true;
+              }
+              return false;
+            })
             .map((apiItem, index) => {
+              const apiName = apiItem.split("/")[1];
               return (
                 <NavLink
-                  to={`/${apiItem}`}
+                  to={`/${apiName}`}
                   key={`apiItem-${index}`}
                   className={`nav ${
-                    activeAPI && activeAPI.Name === apiItem
+                    activeAPI && activeAPI.Name === apiName
                       ? `active`
                       : `inactive`
                   }`}
                 >
-                  {apiItem}
+                  {apiName}
                 </NavLink>
               );
             })}
