@@ -4,7 +4,7 @@ const initialState = {
     activeAPI: null,
     APISwagger: null,
     APIEndpoints: null,
-    activeEndpoints: null,
+    activeEndpoints: {},
     EndpointParameters: null,
     URLParameters: null,
     queries: {},

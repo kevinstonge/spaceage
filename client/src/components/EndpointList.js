@@ -10,24 +10,24 @@ export default function EndpointList(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    if (URLParameters && URLParameters.endpoint && apiSwagger) {
+    if (URLParameters && apiSwagger && activeAPI) {
       const endpointMatch = Object.keys(apiSwagger.paths).filter(
         (path) => path.split("/")[2] === URLParameters.endpoint
       );
-      if (endpointMatch.length > 0) {
+      if (
+        endpointMatch.length > 0 &&
+        (!activeEndpoints || !activeEndpoints.hasOwnProperty(URLParameters.api))
+      ) {
         dispatch({
           type: allActions.APIActions.setActiveEndpoint,
           payload: { apiName: activeAPI, endpoint: URLParameters.endpoint },
         });
-      } else {
-        dispatch({
-          type: allActions.APIActions.setActiveEndpoint,
-          payload: { apiName: activeAPI, endpoint: null },
-        });
-        history.push(`${URLParameters.api}/`);
       }
-    } else if (URLParameters && URLParameters.endpoint === null) {
-      if (activeEndpoints[URLParameters.api]) {
+      if (
+        !URLParameters.hasOwnProperty("endpoint") &&
+        activeEndpoints &&
+        activeEndpoints.hasOwnProperty(URLParameters.api)
+      ) {
         history.push(
           `${URLParameters.api}/${activeEndpoints[URLParameters.api]}`
         );
@@ -41,7 +41,7 @@ export default function EndpointList(props) {
     activeEndpoints,
     history,
   ]);
-
+  console.log(URLParameters);
   return (
     <nav>
       {URLParameters?.api &&
