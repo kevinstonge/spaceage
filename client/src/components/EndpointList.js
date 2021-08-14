@@ -24,12 +24,12 @@ export default function EndpointList(props) {
         });
       }
       if (
-        !URLParameters.hasOwnProperty("endpoint") &&
-        activeEndpoints &&
-        activeEndpoints.hasOwnProperty(URLParameters.api)
+        URLParameters && activeEndpoints &&
+        (!URLParameters.hasOwnProperty("endpoint") || URLParameters.endpoint === undefined) &&
+         activeEndpoints.hasOwnProperty(URLParameters.api)
       ) {
         history.push(
-          `${URLParameters.api}/${activeEndpoints[URLParameters.api]}`
+          `/${URLParameters.api}/${activeEndpoints[URLParameters.api]}`
         );
       }
     }
@@ -41,7 +41,6 @@ export default function EndpointList(props) {
     activeEndpoints,
     history,
   ]);
-  console.log(URLParameters);
   return (
     <nav>
       {URLParameters?.api &&
