@@ -46,11 +46,12 @@ export default function EndpointList(props) {
       {URLParameters?.api &&
         apiSwagger &&
         Object.keys(apiSwagger.paths).map((path, index) => {
+          const pathParts = path.split("/");
           if (
-            path.split("/")[1] === activeAPI &&
-            path.split("/").length === 4
+            pathParts[1] === activeAPI &&
+            (pathParts.length === 4 || (pathParts.length === 3 && pathParts[2]===""))
           ) {
-            const endpoint = path.split("/")[2];
+            const endpoint = (pathParts[2] === "") ? activeAPI : pathParts[2];
             return (
               <NavLink
                 to={`/${activeAPI}/${endpoint}`}
@@ -59,7 +60,7 @@ export default function EndpointList(props) {
                   URLParameters.endpoint === endpoint ? `active` : `inactive`
                 }`}
               >
-                {endpoint}
+                {endpoint.replace(/[{}]/g,"")}
               </NavLink>
             );
           } else {
