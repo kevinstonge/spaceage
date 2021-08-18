@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import allActions from "../actions";
-export default function EndpointList(props) {
+export default function EndpointList() {
   const activeAPI = useSelector((state) => state.API.activeAPI);
   const apiSwagger = useSelector((state) => state.API.APISwagger);
   const activeEndpoints = useSelector((state) => state.API.activeEndpoints);
@@ -12,7 +12,9 @@ export default function EndpointList(props) {
   useEffect(() => {
     if (URLParameters && apiSwagger && activeAPI) {
       const endpointMatch = Object.keys(apiSwagger.paths).filter(
-        (path) => path.split("/")[2] === URLParameters.endpoint
+        (path) =>
+          path.split("/")[2] === URLParameters.endpoint ||
+          URLParameters.endpoint === URLParameters.api
       );
       if (
         endpointMatch.length > 0 &&
@@ -24,9 +26,22 @@ export default function EndpointList(props) {
         });
       }
       if (
-        URLParameters && activeEndpoints &&
-        (!URLParameters.hasOwnProperty("endpoint") || URLParameters.endpoint === undefined) &&
-         activeEndpoints.hasOwnProperty(URLParameters.api)
+        endpointMatch.length > 0 &&
+        activeEndpoints &&
+        activeEndpoints.hasOwnProperty(URLParameters.api) &&
+        activeEndpoints[URLParameters.api] !== URLParameters.endpoint
+      ) {
+        dispatch({
+          type: allActions.APIActions.setActiveEndpoint,
+          payload: { apiName: activeAPI, endpoint: URLParameters.endpoint },
+        });
+      }
+      if (
+        URLParameters &&
+        activeEndpoints &&
+        (!URLParameters.hasOwnProperty("endpoint") ||
+          URLParameters.endpoint === undefined) &&
+        activeEndpoints.hasOwnProperty(URLParameters.api)
       ) {
         history.push(
           `/${URLParameters.api}/${activeEndpoints[URLParameters.api]}`
@@ -47,20 +62,22 @@ export default function EndpointList(props) {
         apiSwagger &&
         Object.keys(apiSwagger.paths).map((path, index) => {
           const pathParts = path.split("/");
-          if (
-            pathParts[1] === activeAPI &&
-            (pathParts.length === 4 || (pathParts.length === 3 && pathParts[2]===""))
-          ) {
-            const endpoint = (pathParts[2] === "") ? activeAPI : pathParts[2];
+          const endpointPath =
+            pathParts[2] === ""
+              ? activeAPI
+              : pathParts.slice(2, -1).join(":").replace(/[{}]/g, "");
+          if (pathParts[1] === activeAPI) {
             return (
               <NavLink
-                to={`/${activeAPI}/${endpoint}`}
-                key={`endpoint-${endpoint}-${index}`}
+                to={`/${activeAPI}/${endpointPath}`}
+                key={`endpoint-${endpointPath}-${index}`}
                 className={`nav ${
-                  URLParameters.endpoint === endpoint ? `active` : `inactive`
+                  URLParameters.endpoint === endpointPath
+                    ? `active`
+                    : `inactive`
                 }`}
               >
-                {endpoint.replace(/[{}]/g,"")}
+                {endpointPath}
               </NavLink>
             );
           } else {

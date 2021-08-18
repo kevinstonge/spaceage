@@ -1,5 +1,5 @@
 import "../styles/Header.scss";
-const Header = (props) => {
+const Header = () => {
   return (
     <header>
       <h1>spaceage</h1>

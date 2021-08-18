@@ -48,30 +48,27 @@ export default function APIList(props) {
     <>
       {apiSwagger?.paths && (
         <nav>
-          {Object.keys(apiSwagger.paths)
-            .filter((path) => {
-              const split = path.split("/");
-              if (split.length === 3) {
-                return true;
-              }
-              return false;
-            })
-            .map((apiItem, index) => {
-              const apiName = apiItem.split("/")[1];
-              return (
-                <NavLink
-                  to={`/${apiName}`}
-                  key={`apiItem-${index}`}
-                  className={`nav ${
-                    activeAPI && activeAPI.Name === apiName
-                      ? `active`
-                      : `inactive`
-                  }`}
-                >
-                  {apiName}
-                </NavLink>
-              );
-            })}
+          {Array.from(
+            new Set(
+              Object.keys(apiSwagger.paths).map((path) => {
+                return path.split("/")[1];
+              })
+            )
+          ).map((apiItem, index) => {
+            return (
+              <NavLink
+                to={`/${apiItem}`}
+                key={`apiItem-${index}`}
+                className={`nav ${
+                  activeAPI && activeAPI.Name === apiItem
+                    ? `active`
+                    : `inactive`
+                }`}
+              >
+                {apiItem}
+              </NavLink>
+            );
+          })}
         </nav>
       )}
     </>
