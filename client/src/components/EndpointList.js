@@ -11,11 +11,24 @@ export default function EndpointList() {
   const history = useHistory();
   useEffect(() => {
     if (URLParameters && apiSwagger && activeAPI) {
-      const endpointMatch = Object.keys(apiSwagger.paths).filter(
-        (path) =>
-          path.split("/")[2] === URLParameters.endpoint ||
+      const endpointMatch = Object.keys(apiSwagger.paths).filter((path) => {
+        const pathArray = path.split("/");
+        if (pathArray[1] !== URLParameters.api) {
+          return false;
+        }
+        const pathString = path
+          .split("/")
+          .slice(2, -1)
+          .join(":")
+          .replace("{id}", "id");
+        if (
+          pathString === URLParameters.endpoint ||
           URLParameters.endpoint === URLParameters.api
-      );
+        ) {
+          return true;
+        }
+        return false;
+      });
       if (
         endpointMatch.length > 0 &&
         (!activeEndpoints || !activeEndpoints.hasOwnProperty(URLParameters.api))
