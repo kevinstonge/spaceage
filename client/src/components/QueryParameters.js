@@ -173,15 +173,15 @@ export default function QueryParameters() {
                       EndpointParameters[pathString].map((param, index) => {
                         const disabled =
                           Object.keys(queries[queryPath]).includes(
-                            param.Name
-                          ) && parameter !== param.Name;
+                            param.name
+                          ) && parameter !== param.name;
                         return (
                           <option
                             key={`param-${index}`}
                             disabled={disabled}
-                            id={`${param.Name}-option`}
+                            id={`${param.name}-option`}
                           >
-                            {param.Name}
+                            {param.name}
                           </option>
                         );
                       })}
