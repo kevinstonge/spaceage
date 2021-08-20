@@ -4,7 +4,6 @@ import allActions from "../actions";
 import xhr from "../lib/xhr";
 
 export default function QueryParameters() {
-  const favoriteParameters = ["search"];
   const dispatch = useDispatch();
   const apiSwagger = useSelector((state) => state.API.APISwagger);
   const EndpointParameters = useSelector(
@@ -25,6 +24,7 @@ export default function QueryParameters() {
       : undefined;
   useEffect(() => {
     if (URLParameters?.endpoint && URLParameters?.api && apiSwagger) {
+      const favoriteParameters = ["search"];
       const pathData = apiSwagger.paths[`/${pathString}/`];
       const parameters = [];
       if (pathData?.get?.parameters && pathData.get.parameters.length > 0) {
