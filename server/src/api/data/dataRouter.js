@@ -11,13 +11,17 @@ router.get("/apis", async (req, res) => {
   res.status(200).json(data);
 });
 router.get("/*", async (req, res) => {
-  console.log(req.url);
-  if (swagger.paths[req.path]) {
+  const path = req.path.replace("/id/","/{id}/");
+  const fixedURL = req.url.replace("?id=","").replace("id/","");
+  if (swagger.paths[path]) {
     axios
-      .get(`${apiHost}${swagger.basePath}${req.url}`)
+      .get(`${apiHost}${swagger.basePath}${fixedURL}`)
       .then((r) => {
-        console.log(r);
-        res.status(200).json(r.data);
+        if (r.data?.count) {
+          res.status(200).json(r.data);
+        } else {
+          res.status(200).json({results: [r.data]})
+        }
       })
       .catch((e) => {
         console.log(e);

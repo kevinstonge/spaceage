@@ -14,7 +14,7 @@ export default function QueryParameters() {
   const queryPath = URLParameters
     ? `${URLParameters.api}/${URLParameters.endpoint}`
     : "";
-
+  console.log(queryPath);
   const pathString =
     URLParameters?.api && URLParameters?.endpoint
       ? URLParameters.api === URLParameters.endpoint
@@ -124,6 +124,7 @@ export default function QueryParameters() {
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .sort()
       .join("&");
+    const queryPathForAPI = URLParameters.api === URLParameters.endpoint ? URLParameters.api : `${URLParameters.api}/${URLParameters.endpoint}`;
     dispatch({
       type: allActions.APIActions.setQueryResults,
       payload: {
@@ -133,7 +134,7 @@ export default function QueryParameters() {
         status: "searching",
       },
     });
-    xhr.get(`/data/${queryPath}/?${queryParameters}`).then((r) => {
+    xhr.get(`/data/${queryPathForAPI}/?${queryParameters}`).then((r) => {
       if (r.data) {
         dispatch({
           type: allActions.APIActions.setQueryResults,
