@@ -50,3 +50,12 @@ nav {
   padding: 0.5rem;
   border: 1px solid $b3;
 }
+
+a {
+  text-decoration: none;
+  color: $f1;
+  &:hover {
+    color: $e1;
+    cursor: pointer;
+  }
+}

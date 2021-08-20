@@ -11,7 +11,7 @@ export default function QueryResults() {
   const queryResults = useSelector((state) =>  state.API.queryResults);
   return (
     <>
-    {queryResults && queryResults[queryPath] && queryResults[queryPath].queryResult.results &&
+    {queryResults && queryResults[queryPath] && queryResults[queryPath].queryResult?.results &&
       <div className="queryResults">
         {queryResults[queryPath].queryResult.results.map(result=>{
           return(
