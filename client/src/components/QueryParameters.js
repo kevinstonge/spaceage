@@ -4,6 +4,7 @@ import allActions from "../actions";
 import xhr from "../lib/xhr";
 
 export default function QueryParameters() {
+  const favoriteParameters = ["search"];
   const dispatch = useDispatch();
   const apiSwagger = useSelector((state) => state.API.APISwagger);
   const EndpointParameters = useSelector(
@@ -14,7 +15,6 @@ export default function QueryParameters() {
   const queryPath = URLParameters
     ? `${URLParameters.api}/${URLParameters.endpoint}`
     : "";
-  console.log(queryPath);
   const pathString =
     URLParameters?.api && URLParameters?.endpoint
       ? URLParameters.api === URLParameters.endpoint
@@ -33,11 +33,21 @@ export default function QueryParameters() {
       if (pathData?.parameters && pathData.parameters.length > 0) {
         parameters.push(...pathData.parameters);
       }
+      const favoritesInParameters = parameters.filter(parameter=>favoriteParameters.includes(parameter.name));
+      const parametersMinusFavorites = parameters.filter(parameter=>{
+        let match = 0;
+        favoritesInParameters.forEach(fav=>{
+          if (fav.name === parameter.name) { match++ }
+        })
+        if (match > 0) { return false }
+        return true;
+      });
+      const sortedParameters = [...favoritesInParameters,...parametersMinusFavorites];
       dispatch({
         type: allActions.APIActions.getEndpointParameters,
         payload: {
           endpoint: pathString,
-          parameters,
+          parameters: sortedParameters,
         },
       });
     }
