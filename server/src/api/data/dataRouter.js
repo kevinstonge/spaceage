@@ -17,12 +17,12 @@ router.get("/*", async (req, res) => {
   if (swagger.paths[path]) {
     const cachedQuery = await db("QueryCache").where("QueryString", fixedURL);
     const queryLifespanMilliseconds = queryLifespanHours * 60 * 60 * 1000;
-    const cacheResult = JSON.parse(cachedQuery[0].QueryResult);
-    console.log(cacheResult.timestamp);
-    console.log(Date.now());
+    const cacheResult = cachedQuery[0]
+      ? JSON.parse(cachedQuery[0].QueryResult)
+      : null;
     if (
-      cacheResult.timestamp &&
-      cacheResult.timestamp + queryLifespanMilliseconds > Date.now()
+      cacheResult?.timestamp &&
+      cacheResult?.timestamp + queryLifespanMilliseconds > Date.now()
     ) {
       res.status(200).json({ results: cacheResult.results });
     } else {
