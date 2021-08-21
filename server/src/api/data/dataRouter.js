@@ -16,38 +16,43 @@ router.get("/*", async (req, res) => {
   const fixedURL = req.url.replace("?id=", "").replace("id/", "");
   if (swagger.paths[path]) {
     const cachedQuery = await db("QueryCache").where("QueryString", fixedURL);
-    console.log(cachedQuery);
     const queryLifespanMilliseconds = queryLifespanHours * 60 * 60 * 1000;
+    const cacheResult = JSON.parse(cachedQuery[0].QueryResult);
+    console.log(cacheResult.timestamp);
+    console.log(Date.now());
     if (
-      cachedQuery[0]?.timestamp &&
-      cachedQuery[0].timestamp + queryLifespanMilliseconds < Date.now()
+      cacheResult.timestamp &&
+      cacheResult.timestamp + queryLifespanMilliseconds > Date.now()
     ) {
-      console.log("queryCache exists and is up to date");
-      res.status(200).json({ results: cachedQuery[0].results });
+      res.status(200).json({ results: cacheResult.results });
     } else {
       axios
         .get(`${apiHost}${swagger.basePath}${fixedURL}`)
         .then(async (r) => {
           if (r.data?.count) {
             res.status(200).json(r.data);
-            const dbInsertion = await db("QueryCache").insert({
-              QueryString: fixedURL,
-              QueryResult: {
-                timestamp: Date.now(),
-                results: r.data.results,
-              },
-            });
-            const log = await db("QueryCache");
-            console.log(log);
+            await db("QueryCache")
+              .insert({
+                QueryString: fixedURL,
+                QueryResult: JSON.stringify({
+                  timestamp: Date.now(),
+                  results: r.data.results,
+                }),
+              })
+              .onConflict("QueryString")
+              .merge();
           } else {
             res.status(200).json({ results: [r.data] });
-            await db("QueryCache").insert({
-              QueryString: fixedURL,
-              QueryResult: {
-                timestamp: Date.now(),
-                results: [r.data],
-              },
-            });
+            await db("QueryCache")
+              .insert({
+                QueryString: fixedURL,
+                QueryResult: JSON.stringify({
+                  timestamp: Date.now(),
+                  results: [r.data],
+                }),
+              })
+              .onConflict("QueryString")
+              .merge();
           }
         })
         .catch((e) => {
