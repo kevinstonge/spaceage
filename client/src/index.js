@@ -1,16 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import { createStore } from "redux";
+import { compose, createStore } from "redux";
 import rootReducer from "./reducers";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import App from "./components/App";
 import reportWebVitals from "./reportWebVitals";
+import persistState from "redux-localstorage";
+
+const enhancer = compose(persistState());
 
 const store = createStore(
   rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  enhancer
 );
 
 ReactDOM.render(
