@@ -33,16 +33,25 @@ export default function QueryParameters() {
       if (pathData?.parameters && pathData.parameters.length > 0) {
         parameters.push(...pathData.parameters);
       }
-      const favoritesInParameters = parameters.filter(parameter=>favoriteParameters.includes(parameter.name));
-      const parametersMinusFavorites = parameters.filter(parameter=>{
+      const favoritesInParameters = parameters.filter((parameter) =>
+        favoriteParameters.includes(parameter.name)
+      );
+      const parametersMinusFavorites = parameters.filter((parameter) => {
         let match = 0;
-        favoritesInParameters.forEach(fav=>{
-          if (fav.name === parameter.name) { match++ }
-        })
-        if (match > 0) { return false }
+        favoritesInParameters.forEach((fav) => {
+          if (fav.name === parameter.name) {
+            match++;
+          }
+        });
+        if (match > 0) {
+          return false;
+        }
         return true;
       });
-      const sortedParameters = [...favoritesInParameters,...parametersMinusFavorites];
+      const sortedParameters = [
+        ...favoritesInParameters,
+        ...parametersMinusFavorites,
+      ];
       dispatch({
         type: allActions.APIActions.getEndpointParameters,
         payload: {
@@ -50,6 +59,30 @@ export default function QueryParameters() {
           parameters: sortedParameters,
         },
       });
+      if (sortedParameters.length === 0 && pathData.get) {
+        dispatch({
+          type: allActions.APIActions.setQueryResults,
+          payload: {
+            queryPath: pathString,
+            query: pathString,
+            queryResult: [],
+            status: "searching",
+          },
+        });
+        xhr.get(`/data/${pathString}/`).then((r) => {
+          if (r.data) {
+            dispatch({
+              type: allActions.APIActions.setQueryResults,
+              payload: {
+                queryPath: pathString,
+                query: pathString,
+                queryResult: r.data,
+                status: "success",
+              },
+            });
+          }
+        });
+      }
     }
   }, [URLParameters, pathString, apiSwagger, dispatch]);
   //check if query data has been stored for current path, if not create empty object for this path:
@@ -87,7 +120,6 @@ export default function QueryParameters() {
     const firstUnusedField = EndpointParameters[pathString].filter(
       (parameter) => !Object.keys(queries[queryPath]).includes(parameter.name)
     )[0].name;
-    console.log(firstUnusedField);
     dispatch({
       type: allActions.APIActions.setQuery,
       payload: {
@@ -134,7 +166,10 @@ export default function QueryParameters() {
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .sort()
       .join("&");
-    const queryPathForAPI = URLParameters.api === URLParameters.endpoint ? URLParameters.api : `${URLParameters.api}/${URLParameters.endpoint}`;
+    const queryPathForAPI =
+      URLParameters.api === URLParameters.endpoint
+        ? URLParameters.api
+        : `${URLParameters.api}/${URLParameters.endpoint}`;
     dispatch({
       type: allActions.APIActions.setQueryResults,
       payload: {
