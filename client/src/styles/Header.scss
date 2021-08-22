@@ -2,7 +2,14 @@
 
 header {
   @include flexR();
+  justify-content: space-between;
+  align-items: center;
+  .left {
+    @include flexR();
+    align-items: center;
+  }
   h1 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    margin-left: -0.5rem;
   }
 }
