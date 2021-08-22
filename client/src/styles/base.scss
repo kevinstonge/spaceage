@@ -59,3 +59,16 @@ a {
     cursor: pointer;
   }
 }
+
+details {
+  summary {
+    display: list-item;
+    cursor: pointer;
+    &::marker {
+      color: $e2;
+    }
+    p {
+      display: inline;
+    }
+  }
+}
