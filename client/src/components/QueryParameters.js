@@ -74,6 +74,7 @@ export default function QueryParameters() {
       if (URLParameters.query && apiSwagger.paths[`/${pathString}/`]) {
         console.log(queryPath);
         //queryPath needs to include URLParameters.query
+        //need to set form state based on URLParameters.query
         callAPI(
           pathString,
           queryPathForAPI,
