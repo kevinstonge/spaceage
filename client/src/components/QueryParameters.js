@@ -72,8 +72,13 @@ export default function QueryParameters() {
       // once working, change onSubmit to execute a history.push() to prevent double searches/statechanges
       // console.log(URLParameters);
       if (URLParameters.query && apiSwagger.paths[`/${pathString}/`]) {
-        console.log(queryPathForAPI);
-        callAPI(pathString, queryPathForAPI, URLParameters.query);
+        console.log(queryPath);
+        //queryPath needs to include URLParameters.query
+        callAPI(
+          pathString,
+          queryPathForAPI,
+          URLParameters.query.replace("?", "")
+        );
       }
     }
   }, [URLParameters, pathString, apiSwagger, queryPathForAPI, dispatch]);

@@ -12,7 +12,7 @@ const callAPI = (queryPath, queryPathForAPI, queryParameters) => {
     },
   });
   xhr
-    .get(`/data/${queryPathForAPI}/${queryParameters}`)
+    .get(`/data/${queryPathForAPI}/?${queryParameters}`)
     .then((r) => {
       if (r.data) {
         store.dispatch({
