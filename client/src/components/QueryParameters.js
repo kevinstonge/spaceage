@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import allActions from "../actions";
-import xhr from "../lib/xhr";
+import callAPI from "../lib/callAPI";
 
 export default function QueryParameters() {
   const dispatch = useDispatch();
@@ -22,6 +22,12 @@ export default function QueryParameters() {
             .replace(":", "/")
             .replace("id", "{id}")}`
       : undefined;
+  const queryPathForAPI =
+    URLParameters.api && URLParameters.endpoint
+      ? URLParameters.api === URLParameters.endpoint
+        ? URLParameters.api
+        : `${URLParameters.api}/${URLParameters.endpoint}`
+      : "";
   useEffect(() => {
     if (URLParameters?.endpoint && URLParameters?.api && apiSwagger) {
       const favoriteParameters = ["search"];
@@ -60,31 +66,17 @@ export default function QueryParameters() {
         },
       });
       if (sortedParameters.length === 0 && pathData.get) {
-        dispatch({
-          type: allActions.APIActions.setQueryResults,
-          payload: {
-            queryPath: pathString,
-            query: pathString,
-            queryResult: [],
-            status: "searching",
-          },
-        });
-        xhr.get(`/data/${pathString}/`).then((r) => {
-          if (r.data) {
-            dispatch({
-              type: allActions.APIActions.setQueryResults,
-              payload: {
-                queryPath: pathString,
-                query: pathString,
-                queryResult: r.data,
-                status: "success",
-              },
-            });
-          }
-        });
+        callAPI(pathString, pathString, "");
+      }
+      // if query parameters are in URLParameters.query, execute the search immediately
+      // once working, change onSubmit to execute a history.push() to prevent double searches/statechanges
+      // console.log(URLParameters);
+      if (URLParameters.query && apiSwagger.paths[`/${pathString}/`]) {
+        console.log(queryPathForAPI);
+        callAPI(pathString, queryPathForAPI, URLParameters.query);
       }
     }
-  }, [URLParameters, pathString, apiSwagger, dispatch]);
+  }, [URLParameters, pathString, apiSwagger, queryPathForAPI, dispatch]);
   //check if query data has been stored for current path, if not create empty object for this path:
   useEffect(() => {
     if (queryPath !== "" && !queryPath.includes("undefined")) {
@@ -166,32 +158,11 @@ export default function QueryParameters() {
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .sort()
       .join("&");
-    const queryPathForAPI =
-      URLParameters.api === URLParameters.endpoint
-        ? URLParameters.api
-        : `${URLParameters.api}/${URLParameters.endpoint}`;
-    dispatch({
-      type: allActions.APIActions.setQueryResults,
-      payload: {
-        queryPath,
-        query: queryParameters,
-        queryResult: [],
-        status: "searching",
-      },
-    });
-    xhr.get(`/data/${queryPathForAPI}/?${queryParameters}`).then((r) => {
-      if (r.data) {
-        dispatch({
-          type: allActions.APIActions.setQueryResults,
-          payload: {
-            queryPath,
-            query: queryParameters,
-            queryResult: r.data,
-            status: "success",
-          },
-        });
-      }
-    });
+    // const queryPathForAPI =
+    //   URLParameters.api === URLParameters.endpoint
+    //     ? URLParameters.api
+    //     : `${URLParameters.api}/${URLParameters.endpoint}`;
+    callAPI(queryPath, queryPathForAPI, queryParameters);
   };
   return (
     <>

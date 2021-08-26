@@ -10,7 +10,8 @@ import allActions from "../actions";
 import QueryResults from "./QueryResults";
 function App() {
   const dispatch = useDispatch();
-  const match = useRouteMatch("/:api?/:endpoint?/:query?");
+  const match = useRouteMatch("/:api?/:endpoint?");
+  match.params.query = window.location.search;
   useEffect(() => {
     dispatch({ type: allActions.APIActions.setParams, payload: match.params });
   }, [match, dispatch]);
