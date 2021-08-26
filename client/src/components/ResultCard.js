@@ -10,7 +10,7 @@ export default function ResultCard(props) {
       <div className="left">
         {Object.entries(props.data).map((result, idx) => {
           const [property, value] = result;
-          if (property === "image" && value.length > 0) {
+          if (property === "image" && value?.length > 0) {
             imageData.url = value;
             return null;
           }
