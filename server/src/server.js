@@ -12,7 +12,7 @@ server.use(
   helmet.contentSecurityPolicy({
     directives: {
       "default-src": domains,
-      "img-src": [...domains, "blob:"],
+      "img-src": [...domains, "blob:", "*"],
       upgradeInsecureRequests: [],
     },
   })
