@@ -240,6 +240,7 @@ export default function QueryParameters() {
                   ></input>
                   {index > 0 && (
                     <button
+                      type="button"
                       id={`${parameter}-remove`}
                       onClick={(e) => {
                         e.preventDefault();
@@ -256,6 +257,7 @@ export default function QueryParameters() {
               EndpointParameters[pathString].length && (
               <p>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     addField();
@@ -266,7 +268,7 @@ export default function QueryParameters() {
               </p>
             )}
             <p>
-              <button type="submit">Search</button>
+              <input type="submit" value="search" />
             </p>
           </form>
         )}

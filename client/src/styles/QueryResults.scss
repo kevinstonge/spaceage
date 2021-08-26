@@ -8,7 +8,7 @@
   background-color: $b2;
   padding: 0.25rem;
   @include flexC();
-  justify-content: stretch;
+  justify-content: space-between;
   align-items: flex-start;
   @media screen and (min-width: 600px) {
     @include flexR();
@@ -37,12 +37,25 @@
 }
 
 .resultItem {
-  padding-left: 1rem;
-  &:nth-child(1) {
-    padding-left: 0;
-  }
+  padding-left: 0;
   .label {
     font-weight: bolder;
     color: $e2;
+  }
+}
+
+details {
+  summary {
+    display: list-item;
+    cursor: pointer;
+    &::marker {
+      color: $e2;
+    }
+    p {
+      display: inline;
+    }
+  }
+  .resultItem {
+    padding-left: 1rem;
   }
 }
