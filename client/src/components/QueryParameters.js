@@ -82,7 +82,7 @@ export default function QueryParameters() {
         );
       }
     }
-  }, [URLParameters, pathString, apiSwagger, queryPathForAPI, dispatch]);
+  }, [URLParameters, pathString, apiSwagger, queryPathForAPI, queryPath, dispatch]);
   //check if query data has been stored for current path, if not create empty object for this path:
   useEffect(() => {
     if (queryPath !== "" && !queryPath.includes("undefined")) {

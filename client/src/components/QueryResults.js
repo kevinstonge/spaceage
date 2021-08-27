@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import ResultCard from "./ResultCard";
+import Loading from "./Loading";
 import "../styles/QueryResults.scss";
 export default function QueryResults() {
   const URLParameters = useSelector((state) => 
@@ -21,8 +22,9 @@ export default function QueryResults() {
       </div>
     }
     {(!queryResults || !queryResults[queryPath]) &&
-      <p>no data</p>    
+      <p>no data</p>
     }
+    {queryResults && queryResults[queryPath] && queryResults[queryPath].status === "searching" && <Loading />}
     </>
   );
 }
