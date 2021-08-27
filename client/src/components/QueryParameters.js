@@ -23,7 +23,7 @@ export default function QueryParameters() {
             .replace("id", "{id}")}`
       : undefined;
   const queryPathForAPI =
-    URLParameters.api && URLParameters.endpoint
+    URLParameters?.api && URLParameters?.endpoint
       ? URLParameters.api === URLParameters.endpoint
         ? URLParameters.api
         : `${URLParameters.api}/${URLParameters.endpoint}`
@@ -72,7 +72,12 @@ export default function QueryParameters() {
       // once working, change onSubmit to execute a history.push() to prevent double searches/statechanges
       // console.log(URLParameters);
       if (URLParameters.query && apiSwagger.paths[`/${pathString}/`]) {
-        console.log(queryPath);
+        if (URLParameters.query.length > 0) {
+          dispatch({
+            type: allActions.APIActions.setQuery,
+            payload: { path: queryPath, data: URLParameters.queryObject },
+          });
+        }
         //queryPath needs to include URLParameters.query
         //need to set form state based on URLParameters.query
         callAPI(
@@ -82,7 +87,14 @@ export default function QueryParameters() {
         );
       }
     }
-  }, [URLParameters, pathString, apiSwagger, queryPathForAPI, queryPath, dispatch]);
+  }, [
+    URLParameters,
+    pathString,
+    apiSwagger,
+    queryPathForAPI,
+    queryPath,
+    dispatch,
+  ]);
   //check if query data has been stored for current path, if not create empty object for this path:
   useEffect(() => {
     if (queryPath !== "" && !queryPath.includes("undefined")) {

@@ -12,6 +12,9 @@ function App() {
   const dispatch = useDispatch();
   const match = useRouteMatch("/:api?/:endpoint?");
   match.params.query = window.location.search;
+  match.params.queryObject = Object.fromEntries(
+    new URLSearchParams(match.params.query)
+  );
   useEffect(() => {
     dispatch({ type: allActions.APIActions.setParams, payload: match.params });
   }, [match, dispatch]);
