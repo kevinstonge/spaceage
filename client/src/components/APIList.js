@@ -9,6 +9,8 @@ export default function APIList(props) {
   const activeAPI = useSelector((state) => state.API.activeAPI);
   const URLParameters = useSelector((state) => state.API.URLParameters);
   const history = useHistory();
+
+  //get swagger data from server:
   useEffect(() => {
     xhr.get("/data/apis").then((r) => {
       dispatch({
@@ -17,32 +19,20 @@ export default function APIList(props) {
       });
     });
   }, [dispatch]);
+
+  //if the api in the URL doesn't exist, redirect to "/":
   useEffect(() => {
     if (apiSwagger && apiSwagger.paths) {
       if (URLParameters.api) {
         const apiMatch = Object.keys(apiSwagger.paths).filter(
-          (api) => api.split("/")[1] === URLParameters.api
+          (path) => path.split("/")[1] === URLParameters.api
         );
-        if (apiMatch.length > 0) {
-          dispatch({
-            type: allActions.APIActions.setActiveAPI,
-            payload: apiMatch[0].split("/")[1],
-          });
-        } else {
-          dispatch({
-            type: allActions.APIActions.setActiveAPI,
-            payload: null,
-          });
+        if (apiMatch.length === 0) {
           history.push("/");
         }
-      } else {
-        dispatch({
-          type: allActions.APIActions.setActiveAPI,
-          payload: null,
-        });
       }
     }
-  }, [URLParameters, apiSwagger, history, dispatch]);
+  }, [URLParameters, apiSwagger, history]);
 
   return (
     <>

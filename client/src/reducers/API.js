@@ -1,6 +1,5 @@
 import actionTypes from "../actions/APIActions.js";
 const initialState = {
-  API: {
     activeAPI: null,
     APISwagger: null,
     activeEndpoints: {},
@@ -8,7 +7,6 @@ const initialState = {
     URLParameters: null,
     queries: {},
     queryResults: {},
-  },
 };
 const API = (state = initialState, action) => {
   switch (action.type) {
@@ -33,23 +31,27 @@ const API = (state = initialState, action) => {
       };
     case actionTypes.setParams:
       const {pathname, search} = action.payload;
-      const queryPath =   pathname.replace(/\/$/,"").replace(/^\//,"").split("/");
+      //paths in apiSwagger are in this format: "/config/launcher/{id}/"
+      //and this: "/launch" for /launch/launch on frontend
+      const queryPath = pathname.replace(/\/$/,"").replace(/^\//,"").split("/");
       const api = queryPath[0] || undefined;
       const endpoint = queryPath[1] || undefined;
-      const pathString = api && endpoint
+      const pathStringForSwagger = api && endpoint
         ? api === endpoint
-          ? api : `${api}/${endpoint.replace(":","/").replace("id","{id}")}`
-        : undefined;
-      const queryPathForAPI = api && endpoint
+        ? `/${api}/` : `/${api}/${endpoint.replace(`:id`,`/{id}`)}/` : undefined;
+      const pathStringForReact = api && endpoint
+        ? `${api}/${endpoint}` : undefined;
+      const fullQueryForAPI = api && endpoint
         ? api === endpoint
-          ? `${api}/${search}` : `${api}/${endpoint}/${search}`
+          ? `${api}/${search}` : `${api}/${endpoint.replace(`:id`,"")}/${search.replace(`?id=`,"")}`
           : "";
       return { ...state, URLParameters: {
         api,
         endpoint,
         query: search,
-        pathString,
-        queryPathForAPI
+        pathStringForSwagger,
+        pathStringForReact,
+        fullQueryForAPI,
       } };
     case actionTypes.setQuery:
       return {

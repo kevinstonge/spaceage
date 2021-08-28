@@ -1,25 +1,25 @@
 import allActions from "../actions";
 import xhr from "./xhr";
 import { store } from "../index.js";
-const callAPI = (queryPath, queryPathForAPI, queryParameters) => {
+const callAPI = ({ query, pathStringForSwagger, pathStringForReact, fullQueryForAPI }) => {
   store.dispatch({
     type: allActions.APIActions.setQueryResults,
     payload: {
-      queryPath,
-      query: queryParameters,
+      queryPath: pathStringForReact,
+      query,
       queryResult: [],
       status: "searching",
     },
   });
   xhr
-    .get(`/data/${queryPathForAPI}?${queryParameters}`)
+    .get(`/data/${fullQueryForAPI}`)
     .then((r) => {
       if (r.data) {
         store.dispatch({
           type: allActions.APIActions.setQueryResults,
           payload: {
-            queryPath,
-            query: queryParameters,
+            queryPath: pathStringForReact,
+            query,
             queryResult: r.data,
             status: "success",
           },
@@ -30,8 +30,8 @@ const callAPI = (queryPath, queryPathForAPI, queryParameters) => {
       store.dispatch({
         type: allActions.APIActions.setQueryResults,
         payload: {
-          queryPath,
-          query: queryParameters,
+          queryPath: pathStringForReact,
+          query,
           queryResult: [],
           status: "unable to retrieve data from the server, try again later",
         },

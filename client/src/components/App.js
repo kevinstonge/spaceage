@@ -1,5 +1,5 @@
 import "../styles/App.scss";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Header from "./Header.js";
@@ -11,6 +11,7 @@ import QueryResults from "./QueryResults";
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
+  const URLParameters = useSelector((state)=>state.API.URLParameters);
   useEffect(() => {
     dispatch({ type: allActions.APIActions.setParams, payload: location });
   }, [location, dispatch]);
@@ -18,9 +19,17 @@ function App() {
     <>
       <Header />
       <APIList />
-      <EndpointList />
-      <QueryParameters />
-      <QueryResults />
+      {URLParameters?.api && 
+        <>
+          <EndpointList />
+          {URLParameters?.endpoint &&
+            <>
+              <QueryParameters />
+              <QueryResults />
+            </>
+          }
+        </>
+      }
     </>
   );
 }
