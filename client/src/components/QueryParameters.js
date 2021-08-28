@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useHistory } from "react-router";
 import allActions from "../actions";
 import callAPI from "../lib/callAPI";
+import getAndSortParameters from "../lib/getAndSortParameters";
 export default function QueryParameters() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -15,34 +16,8 @@ export default function QueryParameters() {
   const {api, endpoint, query, pathStringForSwagger, fullQueryForAPI, pathStringForReact, fullQueryForReact} = URLParameters;
   useEffect(() => {
     if (endpoint && api && apiSwagger) {
-      const favoriteParameters = ["search"];
       const pathData = apiSwagger.paths[`${pathStringForSwagger}`];
-      const parameters = [];
-      if (pathData?.get?.parameters && pathData.get.parameters.length > 0) {
-        parameters.push(...pathData.get.parameters);
-      }
-      if (pathData?.parameters && pathData.parameters.length > 0) {
-        parameters.push(...pathData.parameters);
-      }
-      const favoritesInParameters = parameters.filter((parameter) =>
-        favoriteParameters.includes(parameter.name)
-      );
-      const parametersMinusFavorites = parameters.filter((parameter) => {
-        let match = 0;
-        favoritesInParameters.forEach((fav) => {
-          if (fav.name === parameter.name) {
-            match++;
-          }
-        });
-        if (match > 0) {
-          return false;
-        }
-        return true;
-      });
-      const sortedParameters = [
-        ...favoritesInParameters,
-        ...parametersMinusFavorites,
-      ];
+      const sortedParameters = getAndSortParameters(pathData);
       dispatch({
         type: allActions.APIActions.getEndpointParameters,
         payload: {
@@ -55,11 +30,18 @@ export default function QueryParameters() {
         callAPI(URLParameters);
       }
       // if query parameters are in URLParameters.query, execute the search immediately
-      if (query && apiSwagger.paths[`/${pathStringForSwagger}/`]) {
+      if (query && apiSwagger.paths[`${pathStringForSwagger}`]) {
         callAPI(URLParameters);
+        ///TODO: also need to update form state!
+        //dispatch to setQuery: queries[fullQueryForReact]
+        const queryObject = JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+        dispatch({
+          type: allActions.APIActions.setQuery,
+          payload: { path: fullQueryForReact, data: queryObject }
+        })
       }
     }
-  }, [URLParameters, pathStringForSwagger, query, fullQueryForAPI, pathStringForReact, api, endpoint, apiSwagger, dispatch]);
+  }, [URLParameters, pathStringForSwagger, query, queries, fullQueryForAPI, fullQueryForReact, pathStringForReact, api, endpoint, apiSwagger, dispatch]);
   //check if query data has been stored for current path, if not create empty object for this path:
   useEffect(() => {
     if (fullQueryForReact && fullQueryForReact !== "" && !fullQueryForReact.includes("undefined")) {
@@ -82,7 +64,6 @@ export default function QueryParameters() {
       EndpointParameters[pathStringForReact] &&
       EndpointParameters[pathStringForReact].length > 0
     ) {
-      console.log(EndpointParameters[pathStringForReact]);
       dispatch({
         type: allActions.APIActions.setQuery,
         payload: {
@@ -93,15 +74,15 @@ export default function QueryParameters() {
     }
   }, [queries, pathStringForReact, EndpointParameters, fullQueryForAPI, fullQueryForReact, dispatch]);
   const addField = () => {
-    const firstUnusedField = EndpointParameters[pathStringForSwagger].filter(
-      (parameter) => !Object.keys(queries[pathStringForSwagger]).includes(parameter.name)
+    const firstUnusedField = EndpointParameters[pathStringForReact].filter(
+      (parameter) => !Object.keys(queries[fullQueryForReact]).includes(parameter.name)
     )[0].name;
     dispatch({
       type: allActions.APIActions.setQuery,
       payload: {
         path: pathStringForSwagger,
         data: {
-          ...queries[pathStringForSwagger],
+          ...queries[fullQueryForReact],
           [firstUnusedField]: "",
         },
       },
@@ -109,7 +90,7 @@ export default function QueryParameters() {
   };
   const removeField = (e) => {
     const fieldName = e.target.id.substring(0, e.target.id.length - 7);
-    const newQueryData = queries[pathStringForSwagger];
+    const newQueryData = queries[fullQueryForReact];
     delete newQueryData[fieldName];
     dispatch({
       type: allActions.APIActions.setQuery,
@@ -119,7 +100,7 @@ export default function QueryParameters() {
   const changeFieldName = (e) => {
     const oldFieldName = e.target.id.substring(0, e.target.id.length - 7);
     const newFieldName = e.target.value;
-    const newQueryData = queries[pathStringForSwagger];
+    const newQueryData = queries[fullQueryForReact];
     delete newQueryData[oldFieldName];
     newQueryData[newFieldName] = "";
     dispatch({
@@ -128,7 +109,7 @@ export default function QueryParameters() {
     });
   };
   const changeValue = (e) => {
-    const newQueryData = queries[pathStringForSwagger];
+    const newQueryData = queries[fullQueryForReact];
     newQueryData[e.target.id.substring(0, e.target.id.length - 6)] =
       e.target.value;
     dispatch({
@@ -137,7 +118,7 @@ export default function QueryParameters() {
     });
   };
   const onSubmit = () => {
-    const queryParameters = Object.entries(queries[pathStringForSwagger])
+    const queryParameters = Object.entries(queries[fullQueryForReact])
       .filter((entry) => entry[1] !== "")
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .sort()
@@ -150,14 +131,14 @@ export default function QueryParameters() {
       {queries &&
         queries[fullQueryForReact] &&
         EndpointParameters &&
-        EndpointParameters[pathStringForSwagger] && (
+        EndpointParameters[pathStringForReact] && (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               onSubmit();
             }}
           >
-            {Object.entries(queries[pathStringForSwagger]).map((entries, index) => {
+            {Object.entries(queries[fullQueryForReact]).map((entries, index) => {
               const [parameter, value] = entries;
               return (
                 <div key={`queryItem-${index}`}>
@@ -166,11 +147,11 @@ export default function QueryParameters() {
                     id={`${parameter}-select`}
                     onChange={(e) => changeFieldName(e)}
                   >
-                    {EndpointParameters[pathStringForSwagger] &&
-                      EndpointParameters[pathStringForSwagger].length > 0 &&
-                      EndpointParameters[pathStringForSwagger].map((param, index) => {
+                    {EndpointParameters[pathStringForReact] &&
+                      EndpointParameters[pathStringForReact].length > 0 &&
+                      EndpointParameters[pathStringForReact].map((param, index) => {
                         const disabled =
-                          Object.keys(queries[pathStringForSwagger]).includes(
+                          Object.keys(queries[fullQueryForReact]).includes(
                             param.name
                           ) && parameter !== param.name;
                         return (
@@ -205,8 +186,8 @@ export default function QueryParameters() {
                 </div>
               );
             })}
-            {Object.keys(queries[pathStringForSwagger]).length <
-              EndpointParameters[pathStringForSwagger].length && (
+            {Object.keys(queries[fullQueryForReact]).length <
+              EndpointParameters[pathStringForReact].length && (
               <p>
                 <button
                   type="button"
