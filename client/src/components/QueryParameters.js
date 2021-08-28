@@ -1,35 +1,22 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
+import { useHistory } from "react-router";
 import allActions from "../actions";
 import callAPI from "../lib/callAPI";
 
 export default function QueryParameters() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const apiSwagger = useSelector((state) => state.API.APISwagger);
   const EndpointParameters = useSelector(
     (state) => state.API.EndpointParameters
   );
   const URLParameters = useSelector((state) => state.API.URLParameters);
   const queries = useSelector((state) => state.API.queries);
-  const queryPath = URLParameters
-    ? `${URLParameters.api}/${URLParameters.endpoint}`
-    : "";
-  const pathString =
-    URLParameters?.api && URLParameters?.endpoint
-      ? URLParameters.api === URLParameters.endpoint
-        ? URLParameters.api
-        : `${URLParameters.api}/${URLParameters.endpoint
-            .replace(":", "/")
-            .replace("id", "{id}")}`
-      : undefined;
-  const queryPathForAPI =
-    URLParameters.api && URLParameters.endpoint
-      ? URLParameters.api === URLParameters.endpoint
-        ? URLParameters.api
-        : `${URLParameters.api}/${URLParameters.endpoint}`
-      : "";
+  const {api, endpoint, query, pathString, queryPathForAPI} = URLParameters;
+
   useEffect(() => {
-    if (URLParameters?.endpoint && URLParameters?.api && apiSwagger) {
+    if (endpoint && api && apiSwagger) {
       const favoriteParameters = ["search"];
       const pathData = apiSwagger.paths[`/${pathString}/`];
       const parameters = [];
@@ -69,38 +56,33 @@ export default function QueryParameters() {
         callAPI(pathString, pathString, "");
       }
       // if query parameters are in URLParameters.query, execute the search immediately
-      // once working, change onSubmit to execute a history.push() to prevent double searches/statechanges
-      // console.log(URLParameters);
-      if (URLParameters.query && apiSwagger.paths[`/${pathString}/`]) {
-        console.log(queryPath);
-        //queryPath needs to include URLParameters.query
-        //need to set form state based on URLParameters.query
+      if (query && apiSwagger.paths[`/${pathString}/`]) {
         callAPI(
           pathString,
           queryPathForAPI,
-          URLParameters.query.replace("?", "")
+          query.replace("?", "")
         );
       }
     }
-  }, [URLParameters, pathString, apiSwagger, queryPathForAPI, queryPath, dispatch]);
+  }, [pathString, query, queryPathForAPI, api, endpoint, apiSwagger, dispatch]);
   //check if query data has been stored for current path, if not create empty object for this path:
   useEffect(() => {
-    if (queryPath !== "" && !queryPath.includes("undefined")) {
-      const pathExists = queries ? queryPath in queries : false;
+    if (pathString && pathString !== "" && !pathString.includes("undefined")) {
+      const pathExists = queries ? pathString in queries : false;
       if (!pathExists) {
         dispatch({
           type: allActions.APIActions.setQuery,
-          payload: { path: queryPath, data: null },
+          payload: { path: pathString, data: null },
         });
       }
     }
-  }, [queries, queryPath, dispatch]);
+  }, [queries, pathString, dispatch]);
 
   //if query data is null, add the first APIParameter to state to use by default:
   useEffect(() => {
     if (
       queries &&
-      queries[queryPath] === null &&
+      queries[pathString] === null &&
       EndpointParameters &&
       EndpointParameters[pathString] &&
       EndpointParameters[pathString].length > 0
@@ -108,22 +90,22 @@ export default function QueryParameters() {
       dispatch({
         type: allActions.APIActions.setQuery,
         payload: {
-          path: queryPath,
+          path: pathString,
           data: { [EndpointParameters[pathString][0].name]: "" },
         },
       });
     }
-  }, [queries, queryPath, EndpointParameters, pathString, dispatch]);
+  }, [queries, pathString, EndpointParameters, dispatch]);
   const addField = () => {
     const firstUnusedField = EndpointParameters[pathString].filter(
-      (parameter) => !Object.keys(queries[queryPath]).includes(parameter.name)
+      (parameter) => !Object.keys(queries[pathString]).includes(parameter.name)
     )[0].name;
     dispatch({
       type: allActions.APIActions.setQuery,
       payload: {
-        path: queryPath,
+        path: pathString,
         data: {
-          ...queries[queryPath],
+          ...queries[pathString],
           [firstUnusedField]: "",
         },
       },
@@ -131,49 +113,46 @@ export default function QueryParameters() {
   };
   const removeField = (e) => {
     const fieldName = e.target.id.substring(0, e.target.id.length - 7);
-    const newQueryData = queries[queryPath];
+    const newQueryData = queries[pathString];
     delete newQueryData[fieldName];
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: queryPath, data: newQueryData },
+      payload: { path: pathString, data: newQueryData },
     });
   };
   const changeFieldName = (e) => {
     const oldFieldName = e.target.id.substring(0, e.target.id.length - 7);
     const newFieldName = e.target.value;
-    const newQueryData = queries[queryPath];
+    const newQueryData = queries[pathString];
     delete newQueryData[oldFieldName];
     newQueryData[newFieldName] = "";
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: queryPath, data: newQueryData },
+      payload: { path: pathString, data: newQueryData },
     });
   };
   const changeValue = (e) => {
-    const newQueryData = queries[queryPath];
+    const newQueryData = queries[pathString];
     newQueryData[e.target.id.substring(0, e.target.id.length - 6)] =
       e.target.value;
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: queryPath, data: newQueryData },
+      payload: { path: pathString, data: newQueryData },
     });
   };
   const onSubmit = () => {
-    const queryParameters = Object.entries(queries[queryPath])
+    const queryParameters = Object.entries(queries[pathString])
       .filter((entry) => entry[1] !== "")
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .sort()
       .join("&");
-    // const queryPathForAPI =
-    //   URLParameters.api === URLParameters.endpoint
-    //     ? URLParameters.api
-    //     : `${URLParameters.api}/${URLParameters.endpoint}`;
-    callAPI(queryPath, queryPathForAPI, queryParameters);
+    history.push(`/${pathString}/${queryParameters}`);
+    callAPI(pathString, queryPathForAPI, queryParameters);
   };
   return (
     <>
       {queries &&
-        queries[queryPath] &&
+        queries[pathString] &&
         EndpointParameters &&
         EndpointParameters[pathString] && (
           <form
@@ -182,7 +161,7 @@ export default function QueryParameters() {
               onSubmit();
             }}
           >
-            {Object.entries(queries[queryPath]).map((entries, index) => {
+            {Object.entries(queries[pathString]).map((entries, index) => {
               const [parameter, value] = entries;
               return (
                 <div key={`queryItem-${index}`}>
@@ -195,7 +174,7 @@ export default function QueryParameters() {
                       EndpointParameters[pathString].length > 0 &&
                       EndpointParameters[pathString].map((param, index) => {
                         const disabled =
-                          Object.keys(queries[queryPath]).includes(
+                          Object.keys(queries[pathString]).includes(
                             param.name
                           ) && parameter !== param.name;
                         return (
@@ -230,7 +209,7 @@ export default function QueryParameters() {
                 </div>
               );
             })}
-            {Object.keys(queries[queryPath]).length <
+            {Object.keys(queries[pathString]).length <
               EndpointParameters[pathString].length && (
               <p>
                 <button
