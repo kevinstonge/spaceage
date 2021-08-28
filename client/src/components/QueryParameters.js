@@ -3,11 +3,12 @@ import { useEffect } from "react";
 import { useHistory } from "react-router";
 import allActions from "../actions";
 import callAPI from "../lib/callAPI";
-
+import { useHistory } from "react-router";
 export default function QueryParameters() {
   const dispatch = useDispatch();
   const history = useHistory();
   const apiSwagger = useSelector((state) => state.API.APISwagger);
+  const activeEndpoints = useSelector((state) => state.API.activeEndpoints);
   const EndpointParameters = useSelector(
     (state) => state.API.EndpointParameters
   );
@@ -52,6 +53,7 @@ export default function QueryParameters() {
           parameters: sortedParameters,
         },
       });
+      // if the endpoint has no parameters, execute the search immediately
       if (sortedParameters.length === 0 && pathData.get) {
         callAPI(pathString, pathString, "");
       }
