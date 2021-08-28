@@ -41,10 +41,16 @@ const API = (state = initialState, action) => {
         ? `/${api}/` : `/${api}/${endpoint.replace(`:id`,`/{id}`)}/` : undefined;
       const pathStringForReact = api && endpoint
         ? `${api}/${endpoint}` : undefined;
-      const fullQueryForAPI = api && endpoint
-        ? api === endpoint
-          ? `${api}/${search}` : `${api}/${endpoint.replace(`:id`,"")}/${search.replace(`?id=`,"")}`
+      const fullQueryForAPI = pathStringForSwagger
+        ? search
+          ? `${pathStringForSwagger}${search.replace(`?id=`,"")}`
+          : `${pathStringForSwagger.replace(`{id}`,"")}${search.replace(`?id=`,"")}`
           : "";
+      const fullQueryForReact = pathStringForReact
+        ? search 
+          ? `${pathStringForReact}/${search}`
+          : pathStringForReact
+          : undefined;
       return { ...state, URLParameters: {
         api,
         endpoint,
@@ -52,6 +58,7 @@ const API = (state = initialState, action) => {
         pathStringForSwagger,
         pathStringForReact,
         fullQueryForAPI,
+        fullQueryForReact,
       } };
     case actionTypes.setQuery:
       return {

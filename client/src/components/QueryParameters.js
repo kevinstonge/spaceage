@@ -12,8 +12,7 @@ export default function QueryParameters() {
   );
   const URLParameters = useSelector((state) => state.API.URLParameters);
   const queries = useSelector((state) => state.API.queries);
-  const {api, endpoint, query, pathStringForSwagger, fullQueryForAPI, pathStringForReact} = URLParameters;
-
+  const {api, endpoint, query, pathStringForSwagger, fullQueryForAPI, pathStringForReact, fullQueryForReact} = URLParameters;
   useEffect(() => {
     if (endpoint && api && apiSwagger) {
       const favoriteParameters = ["search"];
@@ -47,7 +46,7 @@ export default function QueryParameters() {
       dispatch({
         type: allActions.APIActions.getEndpointParameters,
         payload: {
-          endpoint: pathStringForSwagger,
+          endpoint: pathStringForReact,
           parameters: sortedParameters,
         },
       });
@@ -63,35 +62,36 @@ export default function QueryParameters() {
   }, [URLParameters, pathStringForSwagger, query, fullQueryForAPI, pathStringForReact, api, endpoint, apiSwagger, dispatch]);
   //check if query data has been stored for current path, if not create empty object for this path:
   useEffect(() => {
-    if (pathStringForSwagger && pathStringForSwagger !== "" && !pathStringForSwagger.includes("undefined")) {
-      const pathExists = queries ? pathStringForSwagger in queries : false;
+    if (fullQueryForReact && fullQueryForReact !== "" && !fullQueryForReact.includes("undefined")) {
+      const pathExists = queries ? fullQueryForReact in queries : false;
       if (!pathExists) {
         dispatch({
           type: allActions.APIActions.setQuery,
-          payload: { path: pathStringForSwagger, data: null },
+          payload: { path: fullQueryForReact, data: null },
         });
       }
     }
-  }, [queries, pathStringForSwagger, dispatch]);
+  }, [queries, fullQueryForReact, dispatch]);
 
   //if query data is null, add the first APIParameter to state to use by default:
   useEffect(() => {
     if (
       queries &&
-      queries[pathStringForSwagger] === null &&
+      queries[fullQueryForReact] === null &&
       EndpointParameters &&
-      EndpointParameters[pathStringForSwagger] &&
-      EndpointParameters[pathStringForSwagger].length > 0
+      EndpointParameters[pathStringForReact] &&
+      EndpointParameters[pathStringForReact].length > 0
     ) {
+      console.log(EndpointParameters[pathStringForReact]);
       dispatch({
         type: allActions.APIActions.setQuery,
         payload: {
-          path: pathStringForSwagger,
-          data: { [EndpointParameters[pathStringForSwagger][0].name]: "" },
+          path: fullQueryForReact,
+          data: { [EndpointParameters[pathStringForReact][0].name]: "" },
         },
       });
     }
-  }, [queries, pathStringForSwagger, EndpointParameters, dispatch]);
+  }, [queries, pathStringForReact, EndpointParameters, fullQueryForAPI, fullQueryForReact, dispatch]);
   const addField = () => {
     const firstUnusedField = EndpointParameters[pathStringForSwagger].filter(
       (parameter) => !Object.keys(queries[pathStringForSwagger]).includes(parameter.name)
@@ -148,7 +148,7 @@ export default function QueryParameters() {
   return (
     <>
       {queries &&
-        queries[pathStringForSwagger] &&
+        queries[fullQueryForReact] &&
         EndpointParameters &&
         EndpointParameters[pathStringForSwagger] && (
           <form
