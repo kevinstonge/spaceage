@@ -2,10 +2,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import allActions from "../actions";
 import callAPI from "../lib/callAPI";
-
+import { useHistory } from "react-router";
 export default function QueryParameters() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const apiSwagger = useSelector((state) => state.API.APISwagger);
+  const activeEndpoints = useSelector((state) => state.API.activeEndpoints);
   const EndpointParameters = useSelector(
     (state) => state.API.EndpointParameters
   );
@@ -65,12 +67,11 @@ export default function QueryParameters() {
           parameters: sortedParameters,
         },
       });
+      // if the endpoint has no parameters, execute the search immediately
       if (sortedParameters.length === 0 && pathData.get) {
         callAPI(pathString, pathString, "");
       }
       // if query parameters are in URLParameters.query, execute the search immediately
-      // once working, change onSubmit to execute a history.push() to prevent double searches/statechanges
-      // console.log(URLParameters);
       if (URLParameters.query && apiSwagger.paths[`/${pathString}/`]) {
         if (URLParameters.query.length > 0) {
           dispatch({
@@ -78,8 +79,6 @@ export default function QueryParameters() {
             payload: { path: queryPath, data: URLParameters.queryObject },
           });
         }
-        //queryPath needs to include URLParameters.query
-        //need to set form state based on URLParameters.query
         callAPI(
           pathString,
           queryPathForAPI,
@@ -176,11 +175,11 @@ export default function QueryParameters() {
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .sort()
       .join("&");
-    // const queryPathForAPI =
-    //   URLParameters.api === URLParameters.endpoint
-    //     ? URLParameters.api
-    //     : `${URLParameters.api}/${URLParameters.endpoint}`;
-    callAPI(queryPath, queryPathForAPI, queryParameters);
+    history.push(
+      `/${URLParameters.api}/${
+        activeEndpoints[URLParameters.api]
+      }/?${queryParameters}`
+    );
   };
   return (
     <>
