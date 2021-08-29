@@ -14,7 +14,26 @@ export default function QueryParameters() {
   const URLParameters = useSelector((state) => state.API.URLParameters);
   const queries = useSelector((state) => state.API.queries);
   const {api, endpoint, query, pathStringForSwagger, fullQueryForAPI, pathStringForReact, fullQueryForReact} = URLParameters;
+  // if query parameters are in URLParameters.query, execute the search immediately
+  useEffect(()=>{
+    if (query && apiSwagger.paths[`${pathStringForSwagger}`]) {
+      callAPI(URLParameters);
+      const queryObject = JSON.parse(
+        '{"' + decodeURI(query)
+          .replace(/^\?/,'')
+          .replace(/"/g, '\\"')
+          .replace(/&/g, '","')
+          .replace(/=/g,'":"') + '"}'
+      );
+      console.log(queryObject);
+      dispatch({
+        type: allActions.APIActions.setQuery,
+        payload: { path: fullQueryForReact, data: queryObject }
+      })
+    }
+  },[query, apiSwagger, URLParameters, fullQueryForReact, pathStringForSwagger, dispatch]);
   useEffect(() => {
+    //generate list of parameters for the endpoint
     if (endpoint && api && apiSwagger) {
       const pathData = apiSwagger.paths[`${pathStringForSwagger}`];
       const sortedParameters = getAndSortParameters(pathData);
@@ -29,20 +48,9 @@ export default function QueryParameters() {
       if (sortedParameters.length === 0 && pathData?.get) {
         callAPI(URLParameters);
       }
-      // if query parameters are in URLParameters.query, execute the search immediately
-      if (query && apiSwagger.paths[`${pathStringForSwagger}`]) {
-        callAPI(URLParameters);
-        ///TODO: also need to update form state!
-        //dispatch to setQuery: queries[fullQueryForReact]
-        const queryObject = JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-        dispatch({
-          type: allActions.APIActions.setQuery,
-          payload: { path: fullQueryForReact, data: queryObject }
-        })
-      }
     }
-  }, [URLParameters, pathStringForSwagger, query, queries, fullQueryForAPI, fullQueryForReact, pathStringForReact, api, endpoint, apiSwagger, dispatch]);
-  //check if query data has been stored for current path, if not create empty object for this path:
+  }, [URLParameters, pathStringForSwagger, pathStringForReact, api, endpoint, apiSwagger, dispatch]);
+  //if query data has not been stored for current path, create empty object for this path:
   useEffect(() => {
     if (fullQueryForReact && fullQueryForReact !== "" && !fullQueryForReact.includes("undefined")) {
       const pathExists = queries ? fullQueryForReact in queries : false;
@@ -77,10 +85,11 @@ export default function QueryParameters() {
     const firstUnusedField = EndpointParameters[pathStringForReact].filter(
       (parameter) => !Object.keys(queries[fullQueryForReact]).includes(parameter.name)
     )[0].name;
+    console.log(firstUnusedField);
     dispatch({
       type: allActions.APIActions.setQuery,
       payload: {
-        path: pathStringForSwagger,
+        path: fullQueryForReact,
         data: {
           ...queries[fullQueryForReact],
           [firstUnusedField]: "",

@@ -1,12 +1,12 @@
 import allActions from "../actions";
 import xhr from "./xhr";
 import { store } from "../index.js";
-const callAPI = ({ query, pathStringForSwagger, pathStringForReact, fullQueryForAPI }) => {
+const callAPI = ({ query, pathStringForReact, fullQueryForReact, fullQueryForAPI }) => {
   store.dispatch({
     type: allActions.APIActions.setQueryResults,
     payload: {
       queryPath: pathStringForReact,
-      query,
+      query: fullQueryForReact,
       queryResult: [],
       status: "searching",
     },
@@ -19,7 +19,7 @@ const callAPI = ({ query, pathStringForSwagger, pathStringForReact, fullQueryFor
           type: allActions.APIActions.setQueryResults,
           payload: {
             queryPath: pathStringForReact,
-            query,
+            query: fullQueryForReact,
             queryResult: r.data,
             status: "success",
           },
@@ -31,7 +31,7 @@ const callAPI = ({ query, pathStringForSwagger, pathStringForReact, fullQueryFor
         type: allActions.APIActions.setQueryResults,
         payload: {
           queryPath: pathStringForReact,
-          query,
+          query: fullQueryForReact,
           queryResult: [],
           status: "unable to retrieve data from the server, try again later",
         },
