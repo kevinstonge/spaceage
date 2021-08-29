@@ -19,7 +19,7 @@ export default function ResultItem(props) {
             const [subProperty,subValue]=subProp;
             if (subValue === null) { return null }
             return(
-              <ResultItem key={`${subProperty}-${idx}`} property={subProperty} value={subValue} />
+              <ResultItem key={`${property}-${subProperty}-${idx}`} property={subProperty} value={subValue} />
             )
         })}
         </details>

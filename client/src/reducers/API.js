@@ -1,6 +1,5 @@
 import actionTypes from "../actions/APIActions.js";
 const initialState = {
-    activeAPI: null,
     APISwagger: null,
     activeEndpoints: {},
     EndpointParameters: null,
@@ -12,8 +11,6 @@ const API = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.getAPISwagger:
       return { ...state, APISwagger: action.payload };
-    case actionTypes.setActiveAPI:
-      return { ...state, activeAPI: action.payload };
     case actionTypes.setActiveEndpoint:
       return {
         ...state,
@@ -73,10 +70,11 @@ const API = (state = initialState, action) => {
         ...state,
         queryResults: {
           ...state.queryResults,
-          [action.payload.queryPath]: {
+          [action.payload.query]: {
             queryPath: action.payload.queryPath,
             query: action.payload.query,
             queryResult: action.payload.queryResult,
+            timestamp: Date.now(),
             status: action.payload.status || "",
           },
         },

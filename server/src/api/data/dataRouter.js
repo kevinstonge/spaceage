@@ -13,7 +13,7 @@ router.get("/apis", async (req, res) => {
 });
 router.get("/*", async (req, res) => {
   const path = req.path;
-  const subPath = req.path.split("/").slice(0,-1).join("/") + "/";
+  const subPath = req.path.split("/").slice(0,-2).join("/") + "/";
   if (swagger.paths[path] || swagger.paths[subPath]) {
     const cachedQuery = await db("QueryCache").where("QueryString", req.url);
     const queryLifespanMilliseconds = queryLifespanHours * 60 * 60 * 1000;
@@ -27,7 +27,7 @@ router.get("/*", async (req, res) => {
       res.status(200).json({ results: cacheResult.results });
     } else {
       axios
-        .get(`${apiHost}${swagger.basePath}${path}`)
+        .get(`${apiHost}${swagger.basePath}${req.url}`)
         .then(async (r) => {
           if (r.data?.count) {
             res.status(200).json(r.data);

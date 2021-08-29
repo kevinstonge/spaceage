@@ -10,7 +10,7 @@ const Header = () => {
         <h1>spaceage</h1>
       </div>
       <div className="right">
-        <p>right</p>
+        <a href="/launch/upcoming/?search=spacex">spacex:upcoming</a>
       </div>
     </header>
   );

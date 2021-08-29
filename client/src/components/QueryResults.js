@@ -6,25 +6,23 @@ export default function QueryResults() {
   const URLParameters = useSelector((state) => 
     state.API.URLParameters
   );
-  const queryPath = URLParameters
-    ? `${URLParameters.api}/${URLParameters.endpoint}`
-    : "";
+  const {fullQueryForReact} = URLParameters
   const queryResults = useSelector((state) =>  state.API.queryResults);
   return (
     <>
-    {queryResults && queryResults[queryPath] && queryResults[queryPath].queryResult?.results &&
+    {queryResults && queryResults[fullQueryForReact] && queryResults[fullQueryForReact].queryResult?.results &&
       <div className="queryResults">
-        {queryResults[queryPath].queryResult.results.map(result=>{
+        {queryResults[fullQueryForReact].queryResult.results.map((result,index)=>{
           return(
-            <ResultCard key={result.id} data={result} />
+            <ResultCard key={`resultCard-${index}`} data={result} />
           )
         })}
       </div>
     }
-    {(!queryResults || !queryResults[queryPath]) &&
+    {(!queryResults || !queryResults[fullQueryForReact]) &&
       <p>no data</p>
     }
-    {queryResults && queryResults[queryPath] && queryResults[queryPath].status === "searching" && <Loading />}
+    {queryResults && queryResults[fullQueryForReact] && queryResults[fullQueryForReact].status === "searching" && <Loading />}
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import {  useEffect } from "react";
 import { useHistory } from "react-router";
 import allActions from "../actions";
 import callAPI from "../lib/callAPI";
@@ -13,11 +13,12 @@ export default function QueryParameters() {
   );
   const URLParameters = useSelector((state) => state.API.URLParameters);
   const queries = useSelector((state) => state.API.queries);
+  const queryResults = useSelector((state)=> state.API.queryResults);
   const {api, endpoint, query, pathStringForSwagger, fullQueryForAPI, pathStringForReact, fullQueryForReact} = URLParameters;
+
   // if query parameters are in URLParameters.query, execute the search immediately
   useEffect(()=>{
     if (query && apiSwagger.paths[`${pathStringForSwagger}`]) {
-      callAPI(URLParameters);
       const queryObject = JSON.parse(
         '{"' + decodeURI(query)
           .replace(/^\?/,'')
@@ -28,9 +29,15 @@ export default function QueryParameters() {
       dispatch({
         type: allActions.APIActions.setQuery,
         payload: { path: fullQueryForReact, data: queryObject }
-      })
+      });
+      if (
+        !queryResults[fullQueryForReact]
+        || queryResults[fullQueryForReact].timestamp < Date.now() - 10000
+        ) {
+        callAPI(URLParameters);
+      }
     }
-  },[query, apiSwagger, URLParameters, fullQueryForReact, pathStringForSwagger, dispatch]);
+  },[query, queryResults, apiSwagger, URLParameters, fullQueryForReact, pathStringForSwagger, dispatch]);
   useEffect(() => {
     //generate list of parameters for the endpoint
     if (endpoint && api && apiSwagger) {
@@ -43,13 +50,17 @@ export default function QueryParameters() {
           parameters: sortedParameters,
         },
       });
-      console.log(pathStringForSwagger);
       // if the endpoint has no parameters, execute the search immediately
       if (sortedParameters.length === 0 && pathData?.get) {
-        callAPI(URLParameters);
+        if (
+          !queryResults[fullQueryForReact]
+          || queryResults[fullQueryForReact].timestamp < Date.now() - 10000
+          ) {
+          callAPI(URLParameters);
+        }
       }
     }
-  }, [URLParameters, pathStringForSwagger, pathStringForReact, api, endpoint, apiSwagger, dispatch]);
+  }, [URLParameters, pathStringForSwagger, pathStringForReact, fullQueryForReact, api, endpoint, apiSwagger, queryResults, dispatch]);
   //if query data has not been stored for current path, create empty object for this path:
   useEffect(() => {
     if (fullQueryForReact && fullQueryForReact !== "" && !fullQueryForReact.includes("undefined")) {
@@ -62,6 +73,23 @@ export default function QueryParameters() {
       }
     }
   }, [queries, fullQueryForReact, dispatch]);
+
+  //if query data has been stored for current path, push to address bar:
+  useEffect(()=>{
+    if (queries && queries[fullQueryForReact]) {
+      const queryParameters = Object.entries(queries[fullQueryForReact])
+        .filter((entry) => entry[1] !== "")
+        .map((entry) => `${entry[0]}=${entry[1]}`)
+        .sort()
+        .join("&");
+      const currentLocation = `${history.location.pathname}${history.location.search}`;
+      const newLocation = `/${pathStringForReact}/?${queryParameters}`;
+      if (currentLocation !== newLocation) {
+        console.log('pushing');
+        history.push(`/${pathStringForReact}/?${queryParameters}`);
+      }
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   //if query data is null, add the first APIParameter to state to use by default:
   useEffect(() => {
@@ -102,7 +130,7 @@ export default function QueryParameters() {
     delete newQueryData[fieldName];
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: pathStringForSwagger, data: newQueryData },
+      payload: { path: fullQueryForReact, data: newQueryData },
     });
   };
   const changeFieldName = (e) => {
@@ -113,7 +141,7 @@ export default function QueryParameters() {
     newQueryData[newFieldName] = "";
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: pathStringForSwagger, data: newQueryData },
+      payload: { path: fullQueryForReact, data: newQueryData },
     });
   };
   const changeValue = (e) => {
@@ -122,7 +150,7 @@ export default function QueryParameters() {
       e.target.value;
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: pathStringForSwagger, data: newQueryData },
+      payload: { path: fullQueryForReact, data: newQueryData },
     });
   };
   const onSubmit = () => {
@@ -132,7 +160,6 @@ export default function QueryParameters() {
       .sort()
       .join("&");
     history.push(`/${pathStringForReact}/?${queryParameters}`);
-    callAPI(URLParameters);
   };
   return (
     <>

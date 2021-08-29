@@ -1,7 +1,8 @@
 import allActions from "../actions";
 import xhr from "./xhr";
 import { store } from "../index.js";
-const callAPI = ({ query, pathStringForReact, fullQueryForReact, fullQueryForAPI }) => {
+const callAPI = ({ pathStringForReact, fullQueryForReact, fullQueryForAPI }) => {
+  console.log('callAPI');
   store.dispatch({
     type: allActions.APIActions.setQueryResults,
     payload: {
