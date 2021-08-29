@@ -1,7 +1,7 @@
 import "../styles/App.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, useHistory } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Header from "./Header.js";
 import APIList from "./APIList.js";
 import EndpointList from "./EndpointList.js";
@@ -11,10 +11,24 @@ import QueryResults from "./QueryResults";
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
+  const history = useHistory();
+  const [justLanded, setJustLanded] = useState(true);
   const URLParameters = useSelector((state)=>state.API.URLParameters);
   useEffect(() => {
-    dispatch({ type: allActions.APIActions.setParams, payload: location });
-  }, [location, dispatch]);
+    if (justLanded) {
+      setJustLanded(false);
+      dispatch({ type: allActions.APIActions.setParams, payload: location });
+      const pathForHistory = `${location.pathname}${location.search}`;
+      if (pathForHistory.length > 2) {
+        history.push(pathForHistory);
+      }
+      else {
+        history.push('/');
+      }
+    } else {
+      dispatch({ type: allActions.APIActions.setParams, payload: location });
+    }
+  }, [location, justLanded, setJustLanded, history, dispatch]);
   return (
     <>
       <Header />

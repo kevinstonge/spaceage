@@ -10,7 +10,9 @@ export default function EndpointList() {
   const history = useHistory();
   const { api, endpoint } = URLParameters;
   useEffect(() => {
-    if (apiSwagger && api) {
+    if (!endpoint && activeEndpoints[api]) {
+      history.push(`/${api}/${activeEndpoints[api]}`);
+    } else if (activeEndpoints[api] !== endpoint) {
       const endpointMatch = Object.keys(apiSwagger.paths).filter((path) => {
         const pathArray = path.split("/");
         if (pathArray[1] !== api) {
@@ -35,34 +37,11 @@ export default function EndpointList() {
           payload: { apiName: api, endpoint },
         });
       }
-      if (
-        endpointMatch.length > 0 &&
-        activeEndpoints &&
-        activeEndpoints.hasOwnProperty(api) &&
-        activeEndpoints[api] !== endpoint
-      ) {
-        dispatch({
-          type: allActions.APIActions.setActiveEndpoint,
-          payload: { apiName: api, endpoint: endpoint },
-        });
-      }
-      if (
-        activeEndpoints && !endpoint && activeEndpoints.hasOwnProperty(api)
-      ) {
-        history.push(
-          `/${api}/${activeEndpoints[api]}`
-        );
+      if (endpointMatch.length === 0) {
+        history.push(`/${api}`)
       }
     }
-  }, [
-    URLParameters,
-    dispatch,
-    apiSwagger,
-    api,
-    endpoint,
-    activeEndpoints,
-    history,
-  ]);
+  }, [api, endpoint, activeEndpoints, apiSwagger, dispatch, history]);
   return (
     <nav>
       {api && apiSwagger &&

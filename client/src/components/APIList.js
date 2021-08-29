@@ -6,8 +6,7 @@ import xhr from "../lib/xhr.js";
 export default function APIList(props) {
   const dispatch = useDispatch();
   const apiSwagger = useSelector((state) => state.API.APISwagger);
-  const activeAPI = useSelector((state) => state.API.activeAPI);
-  const URLParameters = useSelector((state) => state.API.URLParameters);
+  const api = useSelector((state) => state.API.URLParameters.api);
   const history = useHistory();
 
   //get swagger data from server:
@@ -23,17 +22,16 @@ export default function APIList(props) {
   //if the api in the URL doesn't exist, redirect to "/":
   useEffect(() => {
     if (apiSwagger && apiSwagger.paths) {
-      if (URLParameters.api) {
+      if (api) {
         const apiMatch = Object.keys(apiSwagger.paths).filter(
-          (path) => path.split("/")[1] === URLParameters.api
+          (path) => path.split("/")[1] === api
         );
         if (apiMatch.length === 0) {
           history.push("/");
         }
       }
     }
-  }, [URLParameters, apiSwagger, history]);
-
+  }, [api, apiSwagger, history]);
   return (
     <>
       {apiSwagger?.paths && (
@@ -50,7 +48,7 @@ export default function APIList(props) {
                 to={`/${apiItem}`}
                 key={`apiItem-${index}`}
                 className={`nav ${
-                  activeAPI && activeAPI.Name === apiItem
+                  api === apiItem
                     ? `active`
                     : `inactive`
                 }`}

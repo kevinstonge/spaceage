@@ -79,6 +79,17 @@ const API = (state = initialState, action) => {
           },
         },
       };
+    case actionTypes.cleanUpQueryResults:
+      const maxSavedResults = 10;
+      const newResults = {};
+      Object.entries(state.queryResults)
+        .sort((a,b)=>b[1].timestamp - a[1].timestamp)
+        .slice(0,maxSavedResults)
+        .forEach(result=>{newResults[result[0]] = result[1]});
+      return {
+        ...state,
+        queryResults: newResults,
+      };
     default:
       return state;
   }

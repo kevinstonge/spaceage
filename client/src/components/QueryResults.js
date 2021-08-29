@@ -1,4 +1,6 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import allActions from "../actions";
 import ResultCard from "./ResultCard";
 import Loading from "./Loading";
 import "../styles/QueryResults.scss";
@@ -7,7 +9,14 @@ export default function QueryResults() {
     state.API.URLParameters
   );
   const {fullQueryForReact} = URLParameters
+  const dispatch = useDispatch();
   const queryResults = useSelector((state) =>  state.API.queryResults);
+  useEffect(()=>{
+    const queryResultKeys = Object.keys(queryResults);
+    if (Object.keys(queryResultKeys).length > 10) {
+      dispatch({type: allActions.APIActions.cleanUpQueryResults});
+    }
+  }, [queryResults, dispatch])
   return (
     <>
     {queryResults && queryResults[fullQueryForReact] && queryResults[fullQueryForReact].queryResult?.results &&

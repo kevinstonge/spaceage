@@ -84,12 +84,11 @@ export default function QueryParameters() {
         .join("&");
       const currentLocation = `${history.location.pathname}${history.location.search}`;
       const newLocation = `/${pathStringForReact}/?${queryParameters}`;
-      if (currentLocation !== newLocation) {
-        console.log('pushing');
+      if (currentLocation !== newLocation && query.length === 0) {
         history.push(`/${pathStringForReact}/?${queryParameters}`);
       }
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [query, queries, fullQueryForReact, history, pathStringForReact])
 
   //if query data is null, add the first APIParameter to state to use by default:
   useEffect(() => {
