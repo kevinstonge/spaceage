@@ -12,10 +12,10 @@ router.get("/apis", async (req, res) => {
   res.status(200).json(data);
 });
 router.get("/*", async (req, res) => {
-  const path = req.path.replace("/id/", "/{id}/");
-  const fixedURL = req.url.replace("?id=", "").replace("id/", "");
-  if (swagger.paths[path]) {
-    const cachedQuery = await db("QueryCache").where("QueryString", fixedURL);
+  const path = req.path;
+  const subPath = req.path.split("/").slice(0,-1).join("/") + "/";
+  if (swagger.paths[path] || swagger.paths[subPath]) {
+    const cachedQuery = await db("QueryCache").where("QueryString", req.url);
     const queryLifespanMilliseconds = queryLifespanHours * 60 * 60 * 1000;
     const cacheResult = cachedQuery[0]
       ? JSON.parse(cachedQuery[0].QueryResult)
@@ -27,13 +27,13 @@ router.get("/*", async (req, res) => {
       res.status(200).json({ results: cacheResult.results });
     } else {
       axios
-        .get(`${apiHost}${swagger.basePath}${fixedURL}`)
+        .get(`${apiHost}${swagger.basePath}${path}`)
         .then(async (r) => {
           if (r.data?.count) {
             res.status(200).json(r.data);
             await db("QueryCache")
               .insert({
-                QueryString: fixedURL,
+                QueryString: req.url,
                 QueryResult: JSON.stringify({
                   timestamp: Date.now(),
                   results: r.data.results,
@@ -45,7 +45,7 @@ router.get("/*", async (req, res) => {
             res.status(200).json({ results: [r.data] });
             await db("QueryCache")
               .insert({
-                QueryString: fixedURL,
+                QueryString: req.url,
                 QueryResult: JSON.stringify({
                   timestamp: Date.now(),
                   results: [r.data],

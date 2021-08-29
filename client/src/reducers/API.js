@@ -38,13 +38,13 @@ const API = (state = initialState, action) => {
       const endpoint = queryPath[1] || undefined;
       const pathStringForSwagger = api && endpoint
         ? api === endpoint
-        ? `/${api}/` : `/${api}/${endpoint.replace(`:id`,`/{id}`)}/` : undefined;
+        ? `/${api}/` : `/${api}/${endpoint.replace(/^(id)$/,`{id}`).replace(/(:id)$/,'/{id}')}/` : undefined;
       const pathStringForReact = api && endpoint
         ? `${api}/${endpoint}` : undefined;
       const fullQueryForAPI = pathStringForSwagger
         ? search
-          ? `${pathStringForSwagger}${search.replace(`?id=`,"")}`
-          : `${pathStringForSwagger.replace(`{id}`,"")}${search.replace(`?id=`,"")}`
+          ? `${pathStringForSwagger.replace(`/{id}`,"")}${search.replace(`?id=`,"")}`
+          : `${pathStringForSwagger.replace(`/{id}`,"")}${search.replace(`?id=`,"")}`
           : "";
       const fullQueryForReact = pathStringForReact
         ? search 

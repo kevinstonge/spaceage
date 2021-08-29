@@ -12,7 +12,7 @@ const callAPI = ({ query, pathStringForReact, fullQueryForReact, fullQueryForAPI
     },
   });
   xhr
-    .get(`/data/${fullQueryForAPI}`)
+    .get(`/data${fullQueryForAPI}`)
     .then((r) => {
       if (r.data) {
         store.dispatch({

@@ -25,7 +25,6 @@ export default function QueryParameters() {
           .replace(/&/g, '","')
           .replace(/=/g,'":"') + '"}'
       );
-      console.log(queryObject);
       dispatch({
         type: allActions.APIActions.setQuery,
         payload: { path: fullQueryForReact, data: queryObject }
@@ -44,6 +43,7 @@ export default function QueryParameters() {
           parameters: sortedParameters,
         },
       });
+      console.log(pathStringForSwagger);
       // if the endpoint has no parameters, execute the search immediately
       if (sortedParameters.length === 0 && pathData?.get) {
         callAPI(URLParameters);
@@ -85,7 +85,6 @@ export default function QueryParameters() {
     const firstUnusedField = EndpointParameters[pathStringForReact].filter(
       (parameter) => !Object.keys(queries[fullQueryForReact]).includes(parameter.name)
     )[0].name;
-    console.log(firstUnusedField);
     dispatch({
       type: allActions.APIActions.setQuery,
       payload: {
