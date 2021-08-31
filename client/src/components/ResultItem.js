@@ -27,9 +27,16 @@ export default function ResultItem(props) {
     )
   } else {
     const stringifiedValue = JSON.stringify(value).replace(/^"(.+)"$/,'$1');
+    const isLink = validator.isURL(stringifiedValue);
+    const linkTarget = isLink
+      ? property === "url"
+        ? "/launch/upcoming/?search=spacex"
+        : stringifiedValue
+        : "";
+    const linkText = linkTarget.replace("https://ll.thespacedevs.com/2.2.0", "");
    return (
     <div className="resultItem">
-      <p><span className="label">{property}</span>: {validator.isURL(stringifiedValue) ? <a href={stringifiedValue}>{stringifiedValue}</a> : stringifiedValue}</p>
+      <p><span className="label">{property}</span>: {isLink ? <a href={linkTarget}>{linkText}</a> : stringifiedValue}</p>
     </div>
    )
   } 
