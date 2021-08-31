@@ -34,6 +34,9 @@ router.get("/*", async (req, res) => {
           if (r.status === 404) {
             res.status(404).json({message: "not found"})
           }
+          if (r.status === 429) {
+            res.status(429).json({message: "too many requests"})
+          }
           if (r.data?.count) {
             res.status(200).json(r.data);
             await db("QueryCache")
