@@ -26,7 +26,7 @@ module.exports = {
   },
   production: {
     client: "pg",
-    connection: `postgres://${process.env.DATABASE_USER}:${process.env.DATABASE_PASS}@${process.env.DATABASE_IP}:5432/spaceage`,
+    connection: `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_IP}:${process.env.DB_PORT}/${process.env.DB_DB}`,
     ssl: { rejectUnauthorized: false },
     migrations: { directory: "./data/migrations" },
     seeds: { directory: "./data/seeds" },
