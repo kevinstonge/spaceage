@@ -31,6 +31,9 @@ router.get("/*", async (req, res) => {
       axios
         .get(`${apiHost}${swagger.basePath}${req.url}`)
         .then(async (r) => {
+          if (r.status === 404) {
+            res.status(404).json({message: "not found"})
+          }
           if (r.data?.count) {
             res.status(200).json(r.data);
             await db("QueryCache")
@@ -58,11 +61,14 @@ router.get("/*", async (req, res) => {
           }
         })
         .catch((e) => {
-          console.log(e);
-          res.status(500).json({
-            message: "something went wrong while processing your request",
-            error: e,
-          });
+          if (e.response.status === 404) {
+            res.status(404).json({message: "couldn't find anything at that endpoint"})
+          } else {
+            res.status(500).json({
+              message: "something went wrong while processing your request",
+              error: e,
+            });
+          }
         });
     }
   } else {
