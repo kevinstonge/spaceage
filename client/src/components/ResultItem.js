@@ -31,7 +31,7 @@ export default function ResultItem(props) {
     const stringifiedValue = JSON.stringify(value).replace(/^"(.+)"$/,'$1');
     const isLink = validator.isURL(stringifiedValue);
     const isAPILink = stringifiedValue.includes(apiSwagger.basePath);
-    const stripFromURL = new RegExp(`https://${process.env.NODE_ENV === "development" && apiSwagger.host.replace(/^(ll\.)/,"lldev.")}${apiSwagger.basePath}`.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
+    const stripFromURL = new RegExp(`https://${process.env.NODE_ENV === "development" ? apiSwagger.host.replace(/^(ll\.)/,"lldev.") : apiSwagger.host}${apiSwagger.basePath}`.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
     const swaggerToReact = (string) => {
       const arr = string.split("/");
       if (arr.length === 4) {
