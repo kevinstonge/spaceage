@@ -19,8 +19,8 @@ router.get("/*", async (req, res) => {
     const queryLifespanMilliseconds = queryLifespanHours * 60 * 60 * 1000;
     const cacheResult = cachedQuery[0]
       ? (typeof cachedQuery[0] === "string")
-        ? cachedQuery[0]
-        : JSON.parse(cachedQuery[0].QueryResult)
+        ? JSON.parse(cachedQuery[0].QueryResult)
+        : cachedQuery[0]
       : null;
     if (
       cacheResult?.timestamp &&
