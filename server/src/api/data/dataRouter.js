@@ -40,7 +40,6 @@ router.get("/*", async (req, res) => {
           } else if (r.data) {
             const results = r.data.count ? r.data.results : [r.data]
             console.log(`${req.ip}->${req.url}: sending fresh results`);
-            res.status(200).json(results);
             await db("QueryCache")
               .insert({
                 QueryString: req.url,
@@ -51,19 +50,14 @@ router.get("/*", async (req, res) => {
               })
               .onConflict("QueryString")
               .merge();
+              res.status(200).json(results);
           } else {
             res.status(500).json({message: "something went wrong while processing your request"})
           }
         })
         .catch((e) => {
-          if (e.status === 404) {
-            res.status(404).json({message: "couldn't find anything at that endpoint"})
-          } else {
-            res.status(500).json({
-              message: "something went wrong while processing your request",
-              error: e,
-            });
-          }
+          console.log(e);
+          res.status(e.status).json({message: "error", error: JSON.stringify(e)})
         });
     }
   } else {
