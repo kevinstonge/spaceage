@@ -57,7 +57,7 @@ router.get("/*", async (req, res) => {
         })
         .catch((e) => {
           console.log(e);
-          res.status(e.status).json({message: "error", error: JSON.stringify(e)})
+          res.status(500).json({message: "error", error: JSON.stringify(e)})
         });
     }
   } else {
