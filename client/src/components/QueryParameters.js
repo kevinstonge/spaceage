@@ -18,7 +18,7 @@ export default function QueryParameters() {
 
   // if query parameters are in URLParameters.query, execute the search immediately
   useEffect(()=>{
-    if (query && apiSwagger.paths[`${pathStringForSwagger}`]) {
+    if (query && apiSwagger.paths && apiSwagger.paths[`${pathStringForSwagger}`]) {
       const queryObject = JSON.parse(
         '{"' + decodeURI(query)
           .replace(/^\?/,'')
@@ -37,7 +37,7 @@ export default function QueryParameters() {
   },[query, queryResults, apiSwagger, URLParameters, pathStringForReact, fullQueryForReact, pathStringForSwagger, dispatch]);
   useEffect(() => {
     //generate list of parameters for the endpoint
-    if (endpoint && api && apiSwagger) {
+    if (endpoint && api && apiSwagger.paths) {
       const pathData = apiSwagger.paths[`${pathStringForSwagger}`];
       const sortedParameters = getAndSortParameters(pathData);
       dispatch({
@@ -66,25 +66,6 @@ export default function QueryParameters() {
       }
     }
   }, [queries, pathStringForReact, dispatch]);
-
-  //if query data has been stored for current path, push to address bar:
-  //this is causing query execution when the query object changes at the top level
-  //this should run only when an endpoint is clicked
-  // useEffect(()=>{
-  //   if (queries && queries.hasOwnProperty(pathStringForReact) && queries[pathStringForReact]) {
-  //     const queryParameters = Object.entries(queries[pathStringForReact])
-  //       .filter((entry) => entry[1] !== "")
-  //       .map((entry) => `${entry[0]}=${entry[1]}`)
-  //       .sort()
-  //       .join("&");
-  //     const currentLocation = `${history.location.pathname}${history.location.search}`;
-  //     const newLocation = `/${pathStringForReact}/?${queryParameters}`;
-  //     if (currentLocation !== newLocation && query.length === 0) {
-  //       history.push(`/${pathStringForReact}/?${queryParameters}`);
-  //     }
-  //   }
-  // }, [query, queries, fullQueryForReact, history, pathStringForReact])
-
   //if query data is null, add the first APIParameter to state to use by default:
   useEffect(() => {
     if (

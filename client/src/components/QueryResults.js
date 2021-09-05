@@ -19,9 +19,9 @@ export default function QueryResults() {
   }, [queryResults, dispatch])
   return (
     <>
-    {queryResults[fullQueryForReact] && queryResults[fullQueryForReact].queryResult?.results &&
+    {queryResults[fullQueryForReact] && queryResults[fullQueryForReact].queryResult.length > 0 &&
       <div className="queryResults">
-        {queryResults[fullQueryForReact].queryResult.results.map((result,index)=>{
+        {queryResults[fullQueryForReact].queryResult.map((result,index)=>{
           return(
             <ResultCard key={`resultCard-${index}`} data={result} />
           )

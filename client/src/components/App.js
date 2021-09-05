@@ -33,7 +33,7 @@ function App() {
     <>
       <Header />
       <APIList />
-      {URLParameters?.api && 
+      { URLParameters?.api && 
         <>
           <EndpointList />
           {URLParameters?.endpoint &&

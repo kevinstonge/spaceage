@@ -22,49 +22,41 @@ router.get("/*", async (req, res) => {
         ? JSON.parse(cachedQuery[0].QueryResult)
         : cachedQuery[0]
       : null;
+    console.log(cacheResult?.Timestamp);
     if (
-      cacheResult?.timestamp &&
-      cacheResult?.timestamp + queryLifespanMilliseconds > Date.now()
+      cacheResult?.Timestamp &&
+      cacheResult?.Timestamp + queryLifespanMilliseconds > Date.now()
     ) {
-      res.status(200).json({ results: cacheResult.results });
+      console.log(`${req.ip}->${req.url}: sending cached results`);
+      res.status(200).json(JSON.parse(cacheResult.QueryResult).results);
     } else {
       axios
         .get(`${apiHost}${swagger.basePath}${req.url}`)
         .then(async (r) => {
           if (r.status === 404) {
             res.status(404).json({message: "not found"})
-          }
-          if (r.status === 429) {
+          } else if (r.status === 429) {
             res.status(429).json({message: "too many requests"})
-          }
-          if (r.data?.count) {
-            res.status(200).json(r.data);
+          } else if (r.data) {
+            const results = r.data.count ? r.data.results : [r.data]
+            console.log(`${req.ip}->${req.url}: sending fresh results`);
+            res.status(200).json(results);
             await db("QueryCache")
               .insert({
                 QueryString: req.url,
                 QueryResult: JSON.stringify({
-                  timestamp: Date.now(),
-                  results: r.data.results,
+                  results,
                 }),
+                Timestamp: Date.now(),
               })
               .onConflict("QueryString")
               .merge();
           } else {
-            res.status(200).json({ results: [r.data] });
-            await db("QueryCache")
-              .insert({
-                QueryString: req.url,
-                QueryResult: JSON.stringify({
-                  timestamp: Date.now(),
-                  results: [r.data],
-                }),
-              })
-              .onConflict("QueryString")
-              .merge();
+            res.status(500).json({message: "something went wrong while processing your request"})
           }
         })
         .catch((e) => {
-          if (e.response.status === 404) {
+          if (e.status === 404) {
             res.status(404).json({message: "couldn't find anything at that endpoint"})
           } else {
             res.status(500).json({

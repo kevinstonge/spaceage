@@ -21,14 +21,12 @@ export default function APIList(props) {
 
   //if the api in the URL doesn't exist, redirect to "/":
   useEffect(() => {
-    if (apiSwagger && apiSwagger.paths) {
-      if (api) {
-        const apiMatch = Object.keys(apiSwagger.paths).filter(
-          (path) => path.split("/")[1] === api
-        );
-        if (apiMatch.length === 0) {
-          history.push("/");
-        }
+    if (api && apiSwagger?.paths) {
+      const apiMatch = Object.keys(apiSwagger.paths).filter(
+        (path) => path.split("/")[1] === api
+      );
+      if (apiMatch.length === 0 && Object.keys(apiSwagger.paths).length > 0) {
+        history.push("/");
       }
     }
   }, [api, apiSwagger, history]);

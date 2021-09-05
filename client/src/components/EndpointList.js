@@ -12,7 +12,7 @@ export default function EndpointList() {
   useEffect(() => {
     if (!endpoint && activeEndpoints[api]) {
       history.push(`/${api}/${activeEndpoints[api]}`);
-    } else if (activeEndpoints[api] !== endpoint) {
+    } else if (paths && activeEndpoints[api] !== endpoint) {
       const endpointMatch = Object.keys(paths).filter((path) => {
         const pathArray = path.split("/");
         if (pathArray[1] !== api) {
@@ -23,6 +23,7 @@ export default function EndpointList() {
           .slice(2, -1)
           .join(":")
           .replace("{id}", "id");
+        console.log(`pathString: ${pathString}, endpoint: ${endpoint}`);
         if (pathString === endpoint || endpoint === api) {
           return true;
         }
@@ -34,6 +35,7 @@ export default function EndpointList() {
           payload: { apiName: api, endpoint },
         });
       } else {
+        console.log('culprit');
         history.push(`/${api}`)
       }
     }
