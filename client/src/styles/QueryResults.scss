@@ -10,7 +10,7 @@
   @include flexC();
   justify-content: space-between;
   align-items: flex-start;
-  @media screen and (min-width: 600px) {
+  @include desktop {
     @include flexR();
     align-items: center;
   }
@@ -23,13 +23,13 @@
   }
   .right {
     width: 100%;
-    @media screen and (min-width: 600px) {
+    @include desktop {
       max-width: 40%;
       min-width: 10rem;
     }
     img {
       width: 100%;
-      @media screen and (min-width: 600px) {
+      @include desktop {
         min-width: 10rem;
       }
     }

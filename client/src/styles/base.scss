@@ -19,3 +19,9 @@ $e4: #77f;
   display: flex;
   flex-direction: row;
 }
+
+@mixin desktop {
+  @media screen and (min-width: 600px) {
+    @content
+  }
+}

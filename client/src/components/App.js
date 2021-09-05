@@ -6,6 +6,8 @@ import Header from "./Header.js";
 import APIList from "./APIList.js";
 import EndpointList from "./EndpointList.js";
 import QueryParameters from "./QueryParameters.js";
+import Modal from "./Modal";
+import LogIn from "./LogIn";
 import allActions from "../actions";
 import QueryResults from "./QueryResults";
 function App() {
@@ -44,6 +46,7 @@ function App() {
           }
         </>
       }
+      <Modal Component={LogIn} title="log in"/>
     </>
   );
 }

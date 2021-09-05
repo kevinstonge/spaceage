@@ -32,7 +32,7 @@ nav {
   gap: 0.5rem;
   margin: auto;
   padding: 0;
-  @media screen and (min-width: 600px) {
+  @include desktop {
     padding: 1rem;
   }
   max-width: 80rem;
