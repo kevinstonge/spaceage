@@ -22,11 +22,9 @@ router.get("/*", async (req, res) => {
         ? JSON.parse(cachedQuery[0].QueryResult)
         : cachedQuery[0]
       : null;
-    console.log(cacheResult?.Timestamp);
-    if (
-      cacheResult?.Timestamp &&
-      cacheResult?.Timestamp + queryLifespanMilliseconds > Date.now()
-    ) {
+    const timestamp = cacheResult?.Timestamp ? parseInt(cacheResult.Timestamp) : 0;
+    console.log(timestamp);
+    if (timestamp + queryLifespanMilliseconds > Date.now()) {
       console.log(`${req.ip}->${req.url}: sending cached results`);
       res.status(200).json(JSON.parse(cacheResult.QueryResult).results);
     } else {
