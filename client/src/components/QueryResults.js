@@ -19,7 +19,7 @@ export default function QueryResults() {
   }, [queryResults, dispatch])
   return (
     <>
-    {queryResults && queryResults[fullQueryForReact] && queryResults[fullQueryForReact].queryResult?.results &&
+    {queryResults[fullQueryForReact] && queryResults[fullQueryForReact].queryResult?.results &&
       <div className="queryResults">
         {queryResults[fullQueryForReact].queryResult.results.map((result,index)=>{
           return(

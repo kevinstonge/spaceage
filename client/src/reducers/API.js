@@ -1,9 +1,17 @@
 import actionTypes from "../actions/APIActions.js";
 const initialState = {
-    APISwagger: null,
+    APISwagger: {},
     activeEndpoints: {},
     EndpointParameters: null,
-    URLParameters: null,
+    URLParameters: {
+      api: null,
+      endpoint: null,
+      query: null,
+      pathStringForSwagger: null,
+      pathStringForReact: null,
+      fullQueryForAPI: null,
+      fullQueryForReact: null,
+    },
     queries: {},
     queryResults: {},
 };

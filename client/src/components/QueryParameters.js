@@ -28,16 +28,13 @@ export default function QueryParameters() {
       );
       dispatch({
         type: allActions.APIActions.setQuery,
-        payload: { path: fullQueryForReact, data: queryObject }
+        payload: { path: pathStringForReact, data: queryObject }
       });
-      if (
-        !queryResults[fullQueryForReact]
-        || queryResults[fullQueryForReact].timestamp < Date.now() - 10000
-        ) {
+      if (!queryResults[fullQueryForReact]) {
         callAPI(URLParameters);
       }
     }
-  },[query, queryResults, apiSwagger, URLParameters, fullQueryForReact, pathStringForSwagger, dispatch]);
+  },[query, queryResults, apiSwagger, URLParameters, pathStringForReact, fullQueryForReact, pathStringForSwagger, dispatch]);
   useEffect(() => {
     //generate list of parameters for the endpoint
     if (endpoint && api && apiSwagger) {
@@ -52,49 +49,46 @@ export default function QueryParameters() {
       });
       // if the endpoint has no parameters, execute the search immediately
       if (sortedParameters.length === 0 && pathData?.get) {
-        if (
-          !queryResults[fullQueryForReact]
-          || queryResults[fullQueryForReact].timestamp < Date.now() - 10000
-          ) {
+        if (!queryResults[fullQueryForReact]) {
           callAPI(URLParameters);
         }
       }
     }
   }, [URLParameters, pathStringForSwagger, pathStringForReact, fullQueryForReact, api, endpoint, apiSwagger, queryResults, dispatch]);
-  //if query data has not been stored for current path, create empty object for this path:
+  // if query data has not been stored for current path, create empty object for this path:
   useEffect(() => {
-    if (fullQueryForReact && fullQueryForReact !== "" && !fullQueryForReact.includes("undefined")) {
-      const pathExists = queries ? fullQueryForReact in queries : false;
-      if (!pathExists) {
+    if (pathStringForReact) {
+      if (!queries.hasOwnProperty(pathStringForReact)) {
         dispatch({
           type: allActions.APIActions.setQuery,
-          payload: { path: fullQueryForReact, data: null },
+          payload: { path: pathStringForReact, data: null },
         });
       }
     }
-  }, [queries, fullQueryForReact, dispatch]);
+  }, [queries, pathStringForReact, dispatch]);
 
   //if query data has been stored for current path, push to address bar:
-  useEffect(()=>{
-    if (queries && queries[fullQueryForReact]) {
-      const queryParameters = Object.entries(queries[fullQueryForReact])
-        .filter((entry) => entry[1] !== "")
-        .map((entry) => `${entry[0]}=${entry[1]}`)
-        .sort()
-        .join("&");
-      const currentLocation = `${history.location.pathname}${history.location.search}`;
-      const newLocation = `/${pathStringForReact}/?${queryParameters}`;
-      if (currentLocation !== newLocation && query.length === 0) {
-        history.push(`/${pathStringForReact}/?${queryParameters}`);
-      }
-    }
-  }, [query, queries, fullQueryForReact, history, pathStringForReact])
+  //this is causing query execution when the query object changes at the top level
+  //this should run only when an endpoint is clicked
+  // useEffect(()=>{
+  //   if (queries && queries.hasOwnProperty(pathStringForReact) && queries[pathStringForReact]) {
+  //     const queryParameters = Object.entries(queries[pathStringForReact])
+  //       .filter((entry) => entry[1] !== "")
+  //       .map((entry) => `${entry[0]}=${entry[1]}`)
+  //       .sort()
+  //       .join("&");
+  //     const currentLocation = `${history.location.pathname}${history.location.search}`;
+  //     const newLocation = `/${pathStringForReact}/?${queryParameters}`;
+  //     if (currentLocation !== newLocation && query.length === 0) {
+  //       history.push(`/${pathStringForReact}/?${queryParameters}`);
+  //     }
+  //   }
+  // }, [query, queries, fullQueryForReact, history, pathStringForReact])
 
   //if query data is null, add the first APIParameter to state to use by default:
   useEffect(() => {
     if (
-      queries &&
-      queries[fullQueryForReact] === null &&
+      queries[pathStringForReact] === null &&
       EndpointParameters &&
       EndpointParameters[pathStringForReact] &&
       EndpointParameters[pathStringForReact].length > 0
@@ -102,7 +96,7 @@ export default function QueryParameters() {
       dispatch({
         type: allActions.APIActions.setQuery,
         payload: {
-          path: fullQueryForReact,
+          path: pathStringForReact,
           data: { [EndpointParameters[pathStringForReact][0].name]: "" },
         },
       });
@@ -110,14 +104,14 @@ export default function QueryParameters() {
   }, [queries, pathStringForReact, EndpointParameters, fullQueryForAPI, fullQueryForReact, dispatch]);
   const addField = () => {
     const firstUnusedField = EndpointParameters[pathStringForReact].filter(
-      (parameter) => !Object.keys(queries[fullQueryForReact]).includes(parameter.name)
+      (parameter) => !Object.keys(queries[pathStringForReact]).includes(parameter.name)
     )[0].name;
     dispatch({
       type: allActions.APIActions.setQuery,
       payload: {
-        path: fullQueryForReact,
+        path: pathStringForReact,
         data: {
-          ...queries[fullQueryForReact],
+          ...queries[pathStringForReact],
           [firstUnusedField]: "",
         },
       },
@@ -125,35 +119,35 @@ export default function QueryParameters() {
   };
   const removeField = (e) => {
     const fieldName = e.target.id.substring(0, e.target.id.length - 7);
-    const newQueryData = queries[fullQueryForReact];
+    const newQueryData = queries[pathStringForReact];
     delete newQueryData[fieldName];
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: fullQueryForReact, data: newQueryData },
+      payload: { path: pathStringForReact, data: newQueryData },
     });
   };
   const changeFieldName = (e) => {
     const oldFieldName = e.target.id.substring(0, e.target.id.length - 7);
     const newFieldName = e.target.value;
-    const newQueryData = queries[fullQueryForReact];
+    const newQueryData = queries[pathStringForReact];
     delete newQueryData[oldFieldName];
     newQueryData[newFieldName] = "";
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: fullQueryForReact, data: newQueryData },
+      payload: { path: pathStringForReact, data: newQueryData },
     });
   };
   const changeValue = (e) => {
-    const newQueryData = queries[fullQueryForReact];
+    const newQueryData = queries[pathStringForReact];
     newQueryData[e.target.id.substring(0, e.target.id.length - 6)] =
       e.target.value;
     dispatch({
       type: allActions.APIActions.setQuery,
-      payload: { path: fullQueryForReact, data: newQueryData },
+      payload: { path: pathStringForReact, data: newQueryData },
     });
   };
   const onSubmit = () => {
-    const queryParameters = Object.entries(queries[fullQueryForReact])
+    const queryParameters = Object.entries(queries[pathStringForReact])
       .filter((entry) => entry[1] !== "")
       .map((entry) => `${entry[0]}=${entry[1]}`)
       .sort()
@@ -163,16 +157,16 @@ export default function QueryParameters() {
   return (
     <>
       {queries &&
-        queries[fullQueryForReact] &&
+        queries[pathStringForReact] !== null &&
         EndpointParameters &&
-        EndpointParameters[pathStringForReact] && (
+        EndpointParameters.hasOwnProperty(pathStringForReact) && (
           <form
             onSubmit={(e) => {
               e.preventDefault();
               onSubmit();
             }}
           >
-            {Object.entries(queries[fullQueryForReact]).map((entries, index) => {
+            {Object.entries(queries[pathStringForReact]).map((entries, index) => {
               const [parameter, value] = entries;
               return (
                 <div key={`queryItem-${index}`}>
@@ -185,7 +179,7 @@ export default function QueryParameters() {
                       EndpointParameters[pathStringForReact].length > 0 &&
                       EndpointParameters[pathStringForReact].map((param, index) => {
                         const disabled =
-                          Object.keys(queries[fullQueryForReact]).includes(
+                          Object.keys(queries[pathStringForReact]).includes(
                             param.name
                           ) && parameter !== param.name;
                         return (
@@ -220,7 +214,7 @@ export default function QueryParameters() {
                 </div>
               );
             })}
-            {Object.keys(queries[fullQueryForReact]).length <
+            {Object.keys(queries[pathStringForReact]).length <
               EndpointParameters[pathStringForReact].length && (
               <p>
                 <button

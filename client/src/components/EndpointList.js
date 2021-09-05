@@ -1,19 +1,19 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import allActions from "../actions";
 export default function EndpointList() {
-  const apiSwagger = useSelector((state) => state.API.APISwagger);
+  const { paths } = useSelector((state) => state.API.APISwagger);
   const activeEndpoints = useSelector((state) => state.API.activeEndpoints);
-  const URLParameters = useSelector((state) => state.API.URLParameters);
+  const {api, endpoint, pathStringForReact} = useSelector((state) => state.API.URLParameters);
+  const queries = useSelector((state)=>state.API.queries);
   const dispatch = useDispatch();
   const history = useHistory();
-  const { api, endpoint } = URLParameters;
   useEffect(() => {
     if (!endpoint && activeEndpoints[api]) {
       history.push(`/${api}/${activeEndpoints[api]}`);
     } else if (activeEndpoints[api] !== endpoint) {
-      const endpointMatch = Object.keys(apiSwagger.paths).filter((path) => {
+      const endpointMatch = Object.keys(paths).filter((path) => {
         const pathArray = path.split("/");
         if (pathArray[1] !== api) {
           return false;
@@ -28,24 +28,35 @@ export default function EndpointList() {
         }
         return false;
       });
-      if (
-        endpointMatch.length > 0 &&
-        (!activeEndpoints || !activeEndpoints.hasOwnProperty(api))
-      ) {
+      if (endpointMatch.length > 0) {
         dispatch({
           type: allActions.APIActions.setActiveEndpoint,
           payload: { apiName: api, endpoint },
         });
-      }
-      if (endpointMatch.length === 0) {
+      } else {
         history.push(`/${api}`)
       }
     }
-  }, [api, endpoint, activeEndpoints, apiSwagger, dispatch, history]);
+  }, [api, endpoint, activeEndpoints, paths, dispatch, history]);
+  const queriesRef = useRef(queries);
+  useEffect(()=>{
+    if (queriesRef.current?.hasOwnProperty(pathStringForReact) && queriesRef.current[pathStringForReact] !== null) {
+      const queryParameters = Object.entries(queriesRef.current[pathStringForReact])
+        .filter((entry) => entry[1] !== "")
+        .map((entry) => `${entry[0]}=${entry[1]}`)
+        .sort()
+        .join("&");
+      const currentLocation = `${history.location.pathname}${history.location.search}`;
+      const newLocation = `/${pathStringForReact}/?${queryParameters}`;
+      if (currentLocation !== newLocation) {
+        history.push(`/${pathStringForReact}/?${queryParameters}`);
+      }
+    }
+  }, [pathStringForReact, queriesRef, history])
   return (
     <nav>
-      {api && apiSwagger &&
-        Object.keys(apiSwagger.paths).map((path, index) => {
+      {api && paths &&
+        Object.keys(paths).map((path, index) => {
           const pathParts = path.split("/");
           const endpointPath =
             pathParts[2] === ""
@@ -57,7 +68,7 @@ export default function EndpointList() {
                 to={`/${api}/${endpointPath}`}
                 key={`endpoint-${endpointPath}-${index}`}
                 className={`nav ${
-                  URLParameters.endpoint === endpointPath
+                  endpoint === endpointPath
                     ? `active`
                     : `inactive`
                 }`}
