@@ -2,7 +2,7 @@
 
 .modalContainer {
   position: fixed;
-  top: 3.2rem;
+  top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
@@ -10,28 +10,36 @@
   @include flexC();
   justify-content: flex-start;
   align-items: center;
-  padding: 1rem;
-  @include desktop {
-    padding: 1rem;
-  }
   > div {
     width: 100%;
+    margin-top: 5rem;
     @include flexC();
     gap: 0.5rem;
     background-color: transparentize($b3, 0.1);
     box-shadow: 5px 5px 20px black;
-    padding: 1rem;
+    padding: 0.5rem;
     border-radius: 0.5rem;
     @include desktop {
-      width: 50%;
+      width: 60%;
       max-width: 40rem;
     }
   }
   .modalHeader {
     @include flexR();
     justify-content: space-between;
-    border-width: 5px;
+    border-bottom-width: 1px;
     border-style: solid;
-    // border-image: linear-gradient(red, green) bottom fill / 100%;
+    border-image: linear-gradient(to left, transparent, transparent 50%, $f1 100%) 1;
+    button {
+      @include button();
+      color: $f1;
+      padding: 0 0.2rem;
+      &:active {
+        color: $e3;
+      }
+      &:hover {
+        font-weight: bold;
+      }
+    }
   }
 }

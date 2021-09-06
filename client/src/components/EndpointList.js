@@ -23,7 +23,6 @@ export default function EndpointList() {
           .slice(2, -1)
           .join(":")
           .replace("{id}", "id");
-        console.log(`pathString: ${pathString}, endpoint: ${endpoint}`);
         if (pathString === endpoint || endpoint === api) {
           return true;
         }

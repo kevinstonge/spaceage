@@ -3,12 +3,7 @@
 
 button.nav,
 a.nav {
-  background-color: $b3;
-  padding: 0.1rem 0.3rem;
-  color: $f2;
-  border: none;
-  border-radius: 0.2rem;
-  cursor: pointer;
+  @include button();
   text-decoration: none;
   &.active {
     background-color: $b1;
@@ -55,4 +50,34 @@ a {
 
 body {
   background-color: $b1;
+}
+
+form {
+  @include flexC();
+  gap: 1rem;
+  >label {
+    width: 100%;
+    @include flexR();
+    gap: 0.5rem;
+    input {
+      width: 100%;
+      background-color: $b2;
+      color: $f2;
+      padding: 0.2rem;
+      border: 1px solid $b4;
+      border-bottom-color: $b5;
+      border-right-color: $b5;
+      border-top-color: $b1;
+      border-left-color: $b1;
+    }
+  }
+  button[type=submit] {
+    @include button();
+    background-color: $b5;
+    width: 5rem;
+    align-self: flex-end;
+    &:hover {
+      font-weight: bold;
+    }
+  }
 }

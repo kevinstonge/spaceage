@@ -15,6 +15,7 @@ function App() {
   const location = useLocation();
   const history = useHistory();
   const [justLanded, setJustLanded] = useState(true);
+  const [modal, setModal] = useState({modal: false, component: LogIn, title: "log in"});
   const URLParameters = useSelector((state)=>state.API.URLParameters);
   useEffect(() => {
     if (justLanded) {
@@ -33,7 +34,7 @@ function App() {
   }, [location, justLanded, setJustLanded, history, dispatch]);
   return (
     <>
-      <Header />
+      <Header setModal={setModal}/>
       <APIList />
       { URLParameters?.api && 
         <>
@@ -46,7 +47,9 @@ function App() {
           }
         </>
       }
-      <Modal Component={LogIn} title="log in"/>
+      {modal.modal &&
+        <Modal Component={modal.component} title={modal.title} setModal={setModal}/>
+      }
     </>
   );
 }

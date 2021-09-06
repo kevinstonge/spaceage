@@ -2,10 +2,12 @@ $b1: #111;
 $b2: #171717;
 $b3: #222;
 $b4: #272727;
-$f1: #ddd;
-$f2: #d7d7d7;
-$f3: #eee;
-$f4: #e7e7e7;
+$b5: #333;
+$f1: #c7c7c7;
+$f2: #ddd;
+$f3: #d7d7d7;
+$f4: #eee;
+$f5: #e7e7e7;
 $e1: #7e7;
 $e2: #b5e;
 $e3: #e92;
@@ -24,4 +26,13 @@ $e4: #77f;
   @media screen and (min-width: 600px) {
     @content
   }
+}
+
+@mixin button {
+  background-color: $b3;
+  padding: 0.1rem 0.3rem;
+  color: $f2;
+  border: none;
+  border-radius: 0.2rem;
+  cursor: pointer;
 }

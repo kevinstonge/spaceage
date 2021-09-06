@@ -1,4 +1,7 @@
 const LogIn = () => {
+  const onSubmit = (e) => {
+    e.preventDefault();
+  }
   return(
     <form>
       <label htmlFor="username">
@@ -7,6 +10,7 @@ const LogIn = () => {
       <label htmlFor="password">
         <p>password:</p><input id="password" name="password" type="text" autoComplete="password"/>
       </label>
+      <button type="submit" onClick={(e)=>onSubmit(e)}>log in</button>
     </form>
   )
 }

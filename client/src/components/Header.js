@@ -1,5 +1,6 @@
 import "../styles/Header.scss";
-const Header = () => {
+import LogIn from "./LogIn";
+const Header = (props) => {
   return (
     <header>
       <div className="left">
@@ -10,7 +11,8 @@ const Header = () => {
         <h1>spaceage</h1>
       </div>
       <div className="right">
-        <a href="/launch/upcoming/?search=spacex">spacex:upcoming</a>
+        <button onClick={()=>{props.setModal({modal:true,component:LogIn,title:"log in"})}}>log in</button>
+        <button>sign up</button>
       </div>
     </header>
   );
