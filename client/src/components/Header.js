@@ -1,5 +1,6 @@
 import "../styles/Header.scss";
 import LogIn from "./LogIn";
+import SignUp from "./SignUp";
 const Header = (props) => {
   return (
     <header>
@@ -11,8 +12,24 @@ const Header = (props) => {
         <h1>spaceage</h1>
       </div>
       <div className="right">
-        <button onClick={()=>{props.setModal({modal:true,component:LogIn,title:"log in"})}}>log in</button>
-        <button>sign up</button>
+        <button
+          onClick={() => {
+            props.setModal({ modal: true, component: LogIn, title: "log_in" });
+          }}
+        >
+          log_in
+        </button>
+        <button
+          onClick={() => {
+            props.setModal({
+              modal: true,
+              component: SignUp,
+              title: "sign_up",
+            });
+          }}
+        >
+          sign_up
+        </button>
       </div>
     </header>
   );

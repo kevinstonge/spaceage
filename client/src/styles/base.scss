@@ -35,8 +35,26 @@ $e4: #77f;
   border: none;
   border-radius: 0.2rem;
   cursor: pointer;
+  line-height: 1rem;
   &:hover {
     color: $e1;
     cursor: pointer;
   }
+}
+
+@mixin input {
+  background-color: $b2;
+  color: $f2;
+  padding: 0.2rem;
+  border: 1px solid $b4;
+  border-bottom-color: $b5;
+  border-right-color: $b5;
+  border-top-color: $b1;
+  border-left-color: $b1;
+  border-radius: 0.2rem;
+}
+
+@mixin font {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8rem;
 }

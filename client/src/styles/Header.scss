@@ -15,8 +15,5 @@ header {
   .right {
     @include flexR();
     gap: 0.2rem;
-    button {
-      @include button();
-    }
   }
 }

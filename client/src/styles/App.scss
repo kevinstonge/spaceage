@@ -1,5 +1,4 @@
 @import "./base.scss";
-@import "./Forms.scss";
 
 button.nav,
 a.nav {
@@ -40,8 +39,18 @@ a {
   color: $f1;
 }
 
-* {
-  font-family: "Courier New", Courier, monospace;
+p,
+a,
+input,
+button,
+select,
+span,
+h1,
+h2,
+h3,
+div,
+form {
+  @include font();
 }
 
 body {
@@ -53,17 +62,21 @@ form {
   > label {
     width: 100%;
     @include flexR();
+    align-items: center;
     gap: 0.5rem;
   }
   input {
-    background-color: $b2;
-    color: $f2;
-    padding: 0.2rem;
-    border: 1px solid $b4;
-    border-bottom-color: $b5;
-    border-right-color: $b5;
-    border-top-color: $b1;
-    border-left-color: $b1;
+    @include input();
+  }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    @include input();
+    border: 1px solid $e1;
+    -webkit-text-fill-color: $e1;
+    -webkit-box-shadow: 0 0 0px 1000px $b2 inset;
+    box-shadow: 0 0 0px 1000px $b2 inset;
+    transition: background-color 1s ease-in-out 0s;
   }
   select {
     background-color: $b2;
@@ -77,11 +90,6 @@ form {
   }
   button[type="submit"] {
     @include button();
-    background-color: $b5;
-    width: 5rem;
     align-self: flex-end;
-    &:hover {
-      font-weight: bold;
-    }
   }
 }

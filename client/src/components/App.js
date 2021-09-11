@@ -7,7 +7,6 @@ import APIList from "./APIList.js";
 import EndpointList from "./EndpointList.js";
 import QueryParameters from "./QueryParameters.js";
 import Modal from "./Modal";
-import LogIn from "./LogIn";
 import allActions from "../actions";
 import QueryResults from "./QueryResults";
 function App() {
@@ -15,8 +14,12 @@ function App() {
   const location = useLocation();
   const history = useHistory();
   const [justLanded, setJustLanded] = useState(true);
-  const [modal, setModal] = useState({modal: false, component: LogIn, title: "log in"});
-  const URLParameters = useSelector((state)=>state.API.URLParameters);
+  const [modal, setModal] = useState({
+    modal: false,
+    component: null,
+    title: "",
+  });
+  const URLParameters = useSelector((state) => state.API.URLParameters);
   useEffect(() => {
     if (justLanded) {
       setJustLanded(false);
@@ -24,9 +27,8 @@ function App() {
       const pathForHistory = `${location.pathname}${location.search}`;
       if (pathForHistory.length > 2) {
         history.push(pathForHistory);
-      }
-      else {
-        history.push('/');
+      } else {
+        history.push("/");
       }
     } else {
       dispatch({ type: allActions.APIActions.setParams, payload: location });
@@ -34,22 +36,26 @@ function App() {
   }, [location, justLanded, setJustLanded, history, dispatch]);
   return (
     <>
-      <Header setModal={setModal}/>
+      <Header setModal={setModal} />
       <APIList />
-      { URLParameters?.api && 
+      {URLParameters?.api && (
         <>
           <EndpointList />
-          {URLParameters?.endpoint &&
+          {URLParameters?.endpoint && (
             <>
               <QueryParameters />
               <QueryResults />
             </>
-          }
+          )}
         </>
-      }
-      {modal.modal &&
-        <Modal Component={modal.component} title={modal.title} setModal={setModal}/>
-      }
+      )}
+      {modal.modal && (
+        <Modal
+          Component={modal.component}
+          title={modal.title}
+          setModal={setModal}
+        />
+      )}
     </>
   );
 }
