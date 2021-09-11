@@ -1,0 +1,15 @@
+@import "./base.scss";
+
+form {
+  gap: 0.25rem;
+}
+button {
+  @include button();
+}
+.queryItem {
+  @include flexR();
+  gap: 0.25rem;
+}
+input[type="submit"] {
+  @include button();
+}

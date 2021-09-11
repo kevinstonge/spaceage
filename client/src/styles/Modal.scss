@@ -1,4 +1,4 @@
-@import './base.scss';
+@import "./base.scss";
 
 .modalContainer {
   position: fixed;
@@ -9,27 +9,38 @@
   overflow: hidden;
   @include flexC();
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
+  @include desktop {
+    align-items: center;
+  }
   > div {
-    width: 100%;
+    width: calc(100vw - 1.5rem);
     margin-top: 5rem;
     @include flexC();
     gap: 0.5rem;
-    background-color: transparentize($b3, 0.1);
+    background-color: $b3;
     box-shadow: 5px 5px 20px black;
-    padding: 0.5rem;
+    padding: 0.25rem;
     border-radius: 0.5rem;
     @include desktop {
       width: 60%;
-      max-width: 40rem;
+      max-width: 30rem;
+      padding: 0.5rem;
     }
   }
   .modalHeader {
     @include flexR();
     justify-content: space-between;
+    padding-bottom: 0.2rem;
     border-bottom-width: 1px;
     border-style: solid;
-    border-image: linear-gradient(to left, transparent, transparent 50%, $f1 100%) 1;
+    border-image: linear-gradient(
+        to left,
+        transparent,
+        transparent 50%,
+        $f1 100%
+      )
+      1;
     button {
       @include button();
       color: $f1;
@@ -40,6 +51,12 @@
       &:hover {
         font-weight: bold;
       }
+    }
+  }
+  form {
+    gap: 1rem;
+    input {
+      width: 100%;
     }
   }
 }

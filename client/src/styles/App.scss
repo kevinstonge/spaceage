@@ -38,10 +38,6 @@ nav {
 a {
   text-decoration: none;
   color: $f1;
-  &:hover {
-    color: $e1;
-    cursor: pointer;
-  }
 }
 
 * {
@@ -54,24 +50,32 @@ body {
 
 form {
   @include flexC();
-  gap: 1rem;
-  >label {
+  > label {
     width: 100%;
     @include flexR();
     gap: 0.5rem;
-    input {
-      width: 100%;
-      background-color: $b2;
-      color: $f2;
-      padding: 0.2rem;
-      border: 1px solid $b4;
-      border-bottom-color: $b5;
-      border-right-color: $b5;
-      border-top-color: $b1;
-      border-left-color: $b1;
-    }
   }
-  button[type=submit] {
+  input {
+    background-color: $b2;
+    color: $f2;
+    padding: 0.2rem;
+    border: 1px solid $b4;
+    border-bottom-color: $b5;
+    border-right-color: $b5;
+    border-top-color: $b1;
+    border-left-color: $b1;
+  }
+  select {
+    background-color: $b2;
+    color: $f2;
+    padding: 0.2rem;
+    border: 1px solid $b4;
+    border-bottom-color: $b5;
+    border-right-color: $b5;
+    border-top-color: $b1;
+    border-left-color: $b1;
+  }
+  button[type="submit"] {
     @include button();
     background-color: $b5;
     width: 5rem;

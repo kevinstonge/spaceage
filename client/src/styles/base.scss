@@ -24,7 +24,7 @@ $e4: #77f;
 
 @mixin desktop {
   @media screen and (min-width: 600px) {
-    @content
+    @content;
   }
 }
 
@@ -35,4 +35,8 @@ $e4: #77f;
   border: none;
   border-radius: 0.2rem;
   cursor: pointer;
+  &:hover {
+    color: $e1;
+    cursor: pointer;
+  }
 }

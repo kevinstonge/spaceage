@@ -1,9 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
-import {  useEffect } from "react";
+import { useEffect } from "react";
 import { useHistory } from "react-router";
 import allActions from "../actions";
 import callAPI from "../lib/callAPI";
 import getAndSortParameters from "../lib/getAndSortParameters";
+import "../styles/QueryParameters.scss";
 export default function QueryParameters() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -13,28 +14,51 @@ export default function QueryParameters() {
   );
   const URLParameters = useSelector((state) => state.API.URLParameters);
   const queries = useSelector((state) => state.API.queries);
-  const queryResults = useSelector((state)=> state.API.queryResults);
-  const {api, endpoint, query, pathStringForSwagger, fullQueryForAPI, pathStringForReact, fullQueryForReact} = URLParameters;
+  const queryResults = useSelector((state) => state.API.queryResults);
+  const {
+    api,
+    endpoint,
+    query,
+    pathStringForSwagger,
+    fullQueryForAPI,
+    pathStringForReact,
+    fullQueryForReact,
+  } = URLParameters;
 
   // if query parameters are in URLParameters.query, execute the search immediately
-  useEffect(()=>{
-    if (query && apiSwagger.paths && apiSwagger.paths[`${pathStringForSwagger}`]) {
+  useEffect(() => {
+    if (
+      query &&
+      apiSwagger.paths &&
+      apiSwagger.paths[`${pathStringForSwagger}`]
+    ) {
       const queryObject = JSON.parse(
-        '{"' + decodeURI(query)
-          .replace(/^\?/,'')
-          .replace(/"/g, '\\"')
-          .replace(/&/g, '","')
-          .replace(/=/g,'":"') + '"}'
+        '{"' +
+          decodeURI(query)
+            .replace(/^\?/, "")
+            .replace(/"/g, '\\"')
+            .replace(/&/g, '","')
+            .replace(/=/g, '":"') +
+          '"}'
       );
       dispatch({
         type: allActions.APIActions.setQuery,
-        payload: { path: pathStringForReact, data: queryObject }
+        payload: { path: pathStringForReact, data: queryObject },
       });
       if (!queryResults[fullQueryForReact]) {
         callAPI(URLParameters);
       }
     }
-  },[query, queryResults, apiSwagger, URLParameters, pathStringForReact, fullQueryForReact, pathStringForSwagger, dispatch]);
+  }, [
+    query,
+    queryResults,
+    apiSwagger,
+    URLParameters,
+    pathStringForReact,
+    fullQueryForReact,
+    pathStringForSwagger,
+    dispatch,
+  ]);
   useEffect(() => {
     //generate list of parameters for the endpoint
     if (endpoint && api && apiSwagger.paths) {
@@ -54,7 +78,17 @@ export default function QueryParameters() {
         }
       }
     }
-  }, [URLParameters, pathStringForSwagger, pathStringForReact, fullQueryForReact, api, endpoint, apiSwagger, queryResults, dispatch]);
+  }, [
+    URLParameters,
+    pathStringForSwagger,
+    pathStringForReact,
+    fullQueryForReact,
+    api,
+    endpoint,
+    apiSwagger,
+    queryResults,
+    dispatch,
+  ]);
   // if query data has not been stored for current path, create empty object for this path:
   useEffect(() => {
     if (pathStringForReact) {
@@ -82,10 +116,18 @@ export default function QueryParameters() {
         },
       });
     }
-  }, [queries, pathStringForReact, EndpointParameters, fullQueryForAPI, fullQueryForReact, dispatch]);
+  }, [
+    queries,
+    pathStringForReact,
+    EndpointParameters,
+    fullQueryForAPI,
+    fullQueryForReact,
+    dispatch,
+  ]);
   const addField = () => {
     const firstUnusedField = EndpointParameters[pathStringForReact].filter(
-      (parameter) => !Object.keys(queries[pathStringForReact]).includes(parameter.name)
+      (parameter) =>
+        !Object.keys(queries[pathStringForReact]).includes(parameter.name)
     )[0].name;
     dispatch({
       type: allActions.APIActions.setQuery,
@@ -147,54 +189,58 @@ export default function QueryParameters() {
               onSubmit();
             }}
           >
-            {Object.entries(queries[pathStringForReact]).map((entries, index) => {
-              const [parameter, value] = entries;
-              return (
-                <div key={`queryItem-${index}`}>
-                  <select
-                    value={parameter}
-                    id={`${parameter}-select`}
-                    onChange={(e) => changeFieldName(e)}
-                  >
-                    {EndpointParameters[pathStringForReact] &&
-                      EndpointParameters[pathStringForReact].length > 0 &&
-                      EndpointParameters[pathStringForReact].map((param, index) => {
-                        const disabled =
-                          Object.keys(queries[pathStringForReact]).includes(
-                            param.name
-                          ) && parameter !== param.name;
-                        return (
-                          <option
-                            key={`param-${index}`}
-                            disabled={disabled}
-                            id={`${param.name}-option`}
-                          >
-                            {param.name}
-                          </option>
-                        );
-                      })}
-                  </select>
-                  <input
-                    type="text"
-                    value={value}
-                    onChange={(e) => changeValue(e)}
-                    id={`${parameter}-input`}
-                  ></input>
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      id={`${parameter}-remove`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        removeField(e);
-                      }}
+            {Object.entries(queries[pathStringForReact]).map(
+              (entries, index) => {
+                const [parameter, value] = entries;
+                return (
+                  <div className="queryItem" key={`queryItem-${index}`}>
+                    <select
+                      value={parameter}
+                      id={`${parameter}-select`}
+                      onChange={(e) => changeFieldName(e)}
                     >
-                      -
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+                      {EndpointParameters[pathStringForReact] &&
+                        EndpointParameters[pathStringForReact].length > 0 &&
+                        EndpointParameters[pathStringForReact].map(
+                          (param, index) => {
+                            const disabled =
+                              Object.keys(queries[pathStringForReact]).includes(
+                                param.name
+                              ) && parameter !== param.name;
+                            return (
+                              <option
+                                key={`param-${index}`}
+                                disabled={disabled}
+                                id={`${param.name}-option`}
+                              >
+                                {param.name}
+                              </option>
+                            );
+                          }
+                        )}
+                    </select>
+                    <input
+                      type="text"
+                      value={value}
+                      onChange={(e) => changeValue(e)}
+                      id={`${parameter}-input`}
+                    ></input>
+                    {Object.keys(queries[pathStringForReact]).length > 1 && (
+                      <button
+                        type="button"
+                        id={`${parameter}-remove`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          removeField(e);
+                        }}
+                      >
+                        -
+                      </button>
+                    )}
+                  </div>
+                );
+              }
+            )}
             {Object.keys(queries[pathStringForReact]).length <
               EndpointParameters[pathStringForReact].length && (
               <p>
