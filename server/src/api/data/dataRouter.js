@@ -26,7 +26,7 @@ router.get("/*", async (req, res) => {
     console.log(timestamp);
     if (timestamp + queryLifespanMilliseconds > Date.now()) {
       console.log(`${req.ip}->${req.url}: sending cached results`);
-      res.status(200).json(JSON.parse(cacheResult.QueryResult).results);
+      res.status(200).json(cacheResult.QueryResult.results);
     } else {
       axios
         .get(`${apiHost}${swagger.basePath}${req.url}`)
