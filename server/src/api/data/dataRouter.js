@@ -3,9 +3,9 @@ const axios = require("axios");
 const swagger = require("../../../data/APIMetaData/spacedevsSwagger.js");
 const db = require("../../../data/dbConfig.js");
 const apiHost =
-  process.env.NODE_ENV === "development"
-    ? "https://lldev.thespacedevs.com"
-    : `https://${swagger.host}`;
+  process.env.NODE_ENV === "production"
+    ? `https://${swagger.host}`
+    : "https://lldev.thespacedevs.com";
 const queryLifespanHours = 24;
 router.get("/apis", async (req, res) => {
   const data = swagger;
@@ -23,9 +23,9 @@ router.get("/*", async (req, res) => {
         : cachedQuery[0]
       : null;
     const timestamp = cacheResult?.Timestamp ? parseInt(cacheResult.Timestamp) : 0;
-    console.log(timestamp);
     if (timestamp + queryLifespanMilliseconds > Date.now()) {
       console.log(`${req.ip}->${req.url}: sending cached results`);
+      console.log(cacheResult.QueryResult.results);
       res.status(200).json(cacheResult.QueryResult.results);
     } else {
       axios

@@ -12,7 +12,7 @@ module.exports = {
       },
     },
   },
-  testing: {
+  test: {
     client: "sqlite3",
     connection: { filename: "./data/spaceageTest.db3" },
     migrations: { directory: "./data/migrations" },
