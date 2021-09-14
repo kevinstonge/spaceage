@@ -28,6 +28,8 @@ router.post("/login", async (req, res) => {
     const authorized = await login({ email, password });
     if (authorized) {
       res.status(authorized.status).json(authorized.json);
+    } else {
+      res.status(401).json({message: "incorrect email or password provided"});
     }
   } catch (error) {
     console.log(error);

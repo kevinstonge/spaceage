@@ -1,3 +1,4 @@
 import APIActions from "./APIActions";
-const allActions = { APIActions };
+import userActions from "./userActions";
+const allActions = { APIActions, userActions };
 export default allActions;

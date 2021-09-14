@@ -15,7 +15,7 @@ const signup = async (userObject) => {
         const [newUser] = await db("Users").insert({email,password: pwHash})
         if (newUser) {
           const token = jwt.sign({ email }, process.env.JWT_SECRET);
-          return({status:200,json: {message: "account created", token}})
+          return({status:201,json: {message: "account created", token}})
         }
       }
     } else {
