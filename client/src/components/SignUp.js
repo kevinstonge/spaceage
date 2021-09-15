@@ -28,7 +28,10 @@ const SignUp = () => {
     xhr.post("/users/signup",{email: formState.email, password: formState.newPassword})
       .then(r=>{
         if (r.status===201) {
-          dispatch({type: allActions.userActions.signedUp, email: formState.email, token: r.token })
+          dispatch({type: allActions.userActions.signedUp, payload: {email: formState.email, token: r.data.token} })
+        }
+        else {
+          dispatch({type: allActions.userActions.signUpError, payload: {message: r.data.message, class:"error"}})
         }
       })
       .catch((e)=>{

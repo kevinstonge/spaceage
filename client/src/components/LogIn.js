@@ -19,10 +19,10 @@ const LogIn = () => {
     xhr.post("/users/login",{email: formState.email, password: formState.password})
       .then(r=>{
         if (r.status === 200) {
-          dispatch({type: allActions.userActions.loggedIn, payload: {email: formState.email, token: r.token}});
+          dispatch({type: allActions.userActions.loggedIn, payload: {email: formState.email, token: r.data.token}});
         }
         else {
-          dispatch({type: allActions.userActions.logInError, payload: {message: r.message}})
+          dispatch({type: allActions.userActions.logInError, payload: {message: r.data.message, class:"error"}})
         }
       })
       .catch(e=>{
@@ -43,7 +43,7 @@ const LogIn = () => {
           id="password"
           name="password"
           type="password"
-          autoComplete="password"
+          autoComplete="current-password"
           value={formState.password}
           onChange={(e)=>formChange(e)}/>
       </label>

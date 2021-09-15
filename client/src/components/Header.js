@@ -4,6 +4,7 @@ import allActions from "../actions";
 import "../styles/Header.scss";
 import LogIn from "./LogIn";
 import SignUp from "./SignUp";
+import Favorites from "./Favorites";
 const Header = (props) => {
   const user = useSelector((state)=>state.user);
   const dispatch = useDispatch();
@@ -51,7 +52,7 @@ const Header = (props) => {
         }
         {user.loggedIn === true &&
         <>
-        <p>favorites</p>
+        <Favorites />
         <button onClick={()=>{
           dispatch({type: allActions.userActions.loggedOut});}}>log out</button>
         </>
