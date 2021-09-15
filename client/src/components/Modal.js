@@ -10,6 +10,7 @@ const Modal = (props) => {
           <button onClick={()=>props.setModal({modal:false, component: null, title: null})}>x</button>
         </div>
         {props?.Component && <props.Component />}
+        {props?.children && props.children}
       </div>
     </div>
   )
