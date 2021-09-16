@@ -91,8 +91,9 @@ const removeFavorite = async (token,queryString) => {
     if (isEmail(email) && queryString) {
       const [userID] = await db("Users").select("ID").where("Email",email);
       const [favoriteID] = await db("Favorites").select("ID").where("QueryString",queryString);
+      console.log(userID);
       if (userID && favoriteID) {
-        return await db("User_Favorites").delete().where("User_ID",userID).andWhere("Favorite_ID",favoriteID)
+        return await db("User_Favorites").del(['User_ID','Favorite_ID']).where("User_ID",userID.ID).andWhere("Favorite_ID",favoriteID.ID)
           .then(r=>{
             console.log('then');
             return({status:200, json: {message: "deleted"}});
