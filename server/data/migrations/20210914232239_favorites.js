@@ -2,7 +2,7 @@
 exports.up = function(knex) {
   return knex.schema.createTable("Favorites",(favorites) => {
     favorites.increments("ID").notNullable();
-    favorites.string("queryString").notNullable().unique();
+    favorites.string("QueryString").notNullable().unique();
   })
   .createTable("User_Favorites",(user_favorites)=>{
     user_favorites.integer("User_ID").unsigned();

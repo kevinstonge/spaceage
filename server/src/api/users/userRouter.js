@@ -40,17 +40,18 @@ router.post("/login", async (req, res) => {
 
 router.post("/favorites/add", async(req,res) => {
   try {
-    const token = req.headers?.authorization ? req.headers.authorization.replace("Bearer ", ""): "";
-    if (token !== "" && req.body?.favorite) {
+    const token = req.headers?.authorization ? req.headers.authorization.replace("Bearer ", "") : null;
+    if (token && req.body?.favorite) {
       const addedFavorite = await addFavorite(token, req.body.favorite);
       if (addedFavorite) {
         res.status(201).json({message:"successfully added favorite"});
       } else {
         res.status(500).json({message:"server error"});
       }
+    } else {
+      res.status(500).json({message:"server error"});
     }
   } catch (err) {
-    console.log(err);
     res.status(500).json({message:"server error", error: err})
   }
 });
@@ -63,10 +64,10 @@ router.delete("/favorites/remove", async(req,res) => {
       if (removed) {
         res.status(removed.status).json(removed.json);
       } else {
-        res.status(500).json({message:"error removing favorite 66"});
+        res.status(500).json({message:"error removing favorite"});
       }
     } else {
-      res.status(500).json({message:"error removing favorite 69"});
+      res.status(400).json({message:"invalid token or no favoritge specified"});
     }
   } catch (err) {
     console.log(err);
