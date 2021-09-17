@@ -1,25 +1,34 @@
 const router = require("express").Router();
-const jwt = require("jsonwebtoken");
-const {login, signup, getFavorites, addFavorite, removeFavorite} = require('./userModel.js');
+const {
+  login,
+  signup,
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+} = require("./userModel.js");
+const auth = require("../../lib/auth.js");
 router.get("/", (req, res) => {
   res.json({ message: "get request to userRouter" });
 });
 
-router.post("/signup", async (req,res) => {
+router.post("/signup", async (req, res) => {
   try {
     const email = req.body.email || "";
     const password = req.body.password || "";
-    const {status, json} = await signup({email,password});
+    const { status, json } = await signup({ email, password });
     if (status && json) {
-      res.status(status).json(json)
-    }
-    else {
-      res.status(500).json({message: "error encountered while creating user account"});
+      res.status(status).json(json);
+    } else {
+      res
+        .status(500)
+        .json({ message: "error encountered while creating user account" });
     }
   } catch (err) {
-    res.status(500).json({message: "error creating account", error: JSON.stringify(err)})
+    res
+      .status(500)
+      .json({ message: "error creating account", error: JSON.stringify(err) });
   }
-})
+});
 
 router.post("/login", async (req, res) => {
   try {
@@ -29,65 +38,63 @@ router.post("/login", async (req, res) => {
     if (authorized) {
       res.status(authorized.status).json(authorized.json);
     } else {
-      res.status(401).json({message: "incorrect email or password provided"});
+      res.status(401).json({ message: "incorrect email or password provided" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({message:"server error"});
+    res.status(500).json({ message: "server error" });
     throw error;
   }
 });
 
-router.post("/favorites/add", async(req,res) => {
+router.post("/favorites/add", auth, async (req, res) => {
   try {
-    const token = req.headers?.authorization ? req.headers.authorization.replace("Bearer ", "") : null;
-    if (token && req.body?.favorite) {
-      const addedFavorite = await addFavorite(token, req.body.favorite);
-      if (addedFavorite) {
-        res.status(201).json({message:"successfully added favorite"});
+    if (req.userID && req.body?.favorite) {
+      const addedFavorite = await addFavorite(req.userID, req.body.favorite);
+      if (addedFavorite.status) {
+        res.status(addedFavorite.status).json(addedFavorite.json);
       } else {
-        res.status(500).json({message:"server error"});
+        res.status(500).json({ message: "server error" });
       }
     } else {
-      res.status(500).json({message:"server error"});
+      res.status(400).json({ message: "unable to add favorite" });
     }
   } catch (err) {
-    res.status(500).json({message:"server error", error: err})
+    res.status(500).json({ message: "server error", error: err });
   }
 });
 
-router.delete("/favorites/remove", async(req,res) => {
+router.delete("/favorites/remove", auth, async (req, res) => {
   try {
-    const token = req.headers?.authorization ? req.headers.authorization.replace("Bearer ", ""): "";
-    if (token !== "" && req.body?.favorite) {
-      const removed = await removeFavorite(token, req.body.favorite);
-      if (removed) {
+    if (req.userID && req.body?.favoriteID) {
+      const removed = await removeFavorite(req.userID, req.body.favoriteID);
+      if (removed.status) {
         res.status(removed.status).json(removed.json);
       } else {
-        res.status(500).json({message:"error removing favorite"});
+        res.status(500).json({ message: "error removing favorite" });
       }
     } else {
-      res.status(400).json({message:"invalid token or no favoritge specified"});
+      res.status(400).json({ message: "unable to remove favorite" });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({message:"server error", error: err})
+    res.status(500).json({ message: "server error", error: err });
   }
-})
+});
 
-router.get("/favorites", async(req,res) => {
+router.get("/favorites", auth, async (req, res) => {
   try {
-    const token = req.headers?.authorization ? req.headers.authorization.replace("Bearer ", "") : "";
-    const favorites = await getFavorites(token);
+    const favorites = await getFavorites(req.userID);
     if (favorites.status) {
       res.status(favorites.status).json(favorites.json);
-    }
-    else {
-      res.status(500).json({message: "error retrieving favorites from the database"});
+    } else {
+      res
+        .status(500)
+        .json({ message: "error retrieving favorites from the database" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({message: "server error"})
+    res.status(500).json({ message: "server error" });
   }
 });
 
