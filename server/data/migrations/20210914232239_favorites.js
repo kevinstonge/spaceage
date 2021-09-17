@@ -9,12 +9,14 @@ exports.up = function (knex) {
         .integer("User_ID")
         .references("ID")
         .inTable("Users")
-        .onDelete("CASCADE");
+        .onDelete("CASCADE")
+        .notNullable();
       user_favorites
         .integer("Favorite_ID")
         .references("ID")
         .inTable("Favorites")
-        .onDelete("CASCADE");
+        .onDelete("CASCADE")
+        .notNullable();
     });
 };
 

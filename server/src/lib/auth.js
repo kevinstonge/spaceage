@@ -5,7 +5,8 @@ const auth = (req, res, next) => {
       ? req.headers.authorization.replace("Bearer ", "")
       : null;
     if (token) {
-      req.userID = jwt.verify(token, process.env.JWT_SECRET).userID;
+      const userID = jwt.verify(token, process.env.JWT_SECRET);
+      req.userID = userID.userID;
       if (req.userID > 0) {
         next();
       } else {

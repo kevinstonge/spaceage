@@ -15,7 +15,8 @@ const signup = async (userObject) => {
         };
       } else {
         const pwHash = bcrypt.hashSync(password, 7);
-        const [newUser] = await db("Users").insert({ email, password: pwHash });
+        await db("Users").insert({ email, password: pwHash });
+        const [newUser] = await db("Users").where({ Email: email });
         if (newUser) {
           const token = jwt.sign(
             { userID: newUser.ID },
@@ -83,15 +84,24 @@ const addFavorite = async (userID, queryString) => {
   try {
     return await db
       .transaction(async (trx) => {
-        const [favorite] = await db("Favorites")
+        await db("Favorites")
           .transacting(trx)
           .insert({ QueryString: queryString })
           .onConflict("QueryString")
-          .merge();
-        if (favorite) {
+          .ignore();
+        const [newFavorite] = await db("Favorites")
+          .transacting(trx)
+          .where({ QueryString: queryString });
+        if (newFavorite) {
           await db("User_Favorites")
             .transacting(trx)
-            .insert({ User_ID: userID, Favorite_ID: favorite.ID });
+            .insert({ User_ID: userID, Favorite_ID: newFavorite.ID })
+            .then(() => {
+              return { status: 201, json: { message: "favorite added" } };
+            })
+            .catch((e) => {
+              throw e;
+            });
         } else {
           throw "failed to create favorite";
         }
@@ -114,12 +124,18 @@ const addFavorite = async (userID, queryString) => {
 const removeFavorite = async (userID, favoriteID) => {
   try {
     if (userID && favoriteID) {
-      console.log(userID, favoriteID);
       return await db("User_Favorites")
-        .where({ User_ID: userID })
+        .where({ User_ID: userID, Favorite_ID: favoriteID })
+        .del()
         .then((r) => {
-          console.log(r);
-          return { status: 200, json: { message: "deleted" } };
+          if (r > 0) {
+            return { status: 200, json: { message: "deleted" } };
+          } else {
+            return {
+              status: 500,
+              json: { message: "unable to delete favorite" },
+            };
+          }
         })
         .catch((e) => {
           return {
