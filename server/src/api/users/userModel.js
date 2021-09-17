@@ -114,11 +114,11 @@ const addFavorite = async (userID, queryString) => {
 const removeFavorite = async (userID, favoriteID) => {
   try {
     if (userID && favoriteID) {
+      console.log(userID, favoriteID);
       return await db("User_Favorites")
-        .del(["User_ID", "Favorite_ID"])
-        .where("User_ID", userID)
-        .andWhere("Favorite_ID", favoriteID)
-        .then(() => {
+        .where({ User_ID: userID })
+        .then((r) => {
+          console.log(r);
           return { status: 200, json: { message: "deleted" } };
         })
         .catch((e) => {

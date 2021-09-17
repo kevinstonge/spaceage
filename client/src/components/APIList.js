@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import allActions from "../actions";
-import xhr from "../lib/xhr.js";
+import { xhr } from "../lib/xhr.js";
 export default function APIList(props) {
   const dispatch = useDispatch();
   const apiSwagger = useSelector((state) => state.API.APISwagger);
@@ -45,11 +45,7 @@ export default function APIList(props) {
               <NavLink
                 to={`/${apiItem}`}
                 key={`apiItem-${index}`}
-                className={`nav ${
-                  api === apiItem
-                    ? `active`
-                    : `inactive`
-                }`}
+                className={`nav ${api === apiItem ? `active` : `inactive`}`}
               >
                 {apiItem}
               </NavLink>
