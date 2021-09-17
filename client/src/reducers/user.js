@@ -12,7 +12,7 @@ const initialState = {
     class: "info",
     message: "",
   },
-}
+};
 const user = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.signUp:
@@ -20,20 +20,20 @@ const user = (state = initialState, action) => {
         ...state,
         signUpStatus: {
           class: "info",
-          message: "...attempting to create account..."
-        }
+          message: "...attempting to create account...",
+        },
       };
     case actionTypes.signedUp:
       return {
         ...state,
         signUpStatus: {
           class: "info",
-          message: "success!"
+          message: "success!",
         },
         loggedIn: true,
         email: action.payload.email,
         token: action.payload.token,
-      }
+      };
     case actionTypes.signUpError:
       return {
         ...state,
@@ -42,23 +42,23 @@ const user = (state = initialState, action) => {
           message: action.payload.message,
         },
         loggedIn: false,
-      }
+      };
     case actionTypes.signUpStatusReset:
       return {
         ...state,
         signUpStatus: {
           class: "info",
           message: "",
-        }
-      }
+        },
+      };
     case actionTypes.logIn:
       return {
         ...state,
         logInStatus: {
           class: "info",
           message: "...attempting to log you in...",
-        }
-      }
+        },
+      };
     case actionTypes.loggedIn:
       return {
         ...state,
@@ -69,7 +69,7 @@ const user = (state = initialState, action) => {
         loggedIn: true,
         email: action.payload.email,
         token: action.payload.token,
-      }
+      };
     case actionTypes.logInError:
       return {
         ...state,
@@ -78,15 +78,15 @@ const user = (state = initialState, action) => {
           message: action.payload.message,
         },
         loggedIn: false,
-      }
-      case actionTypes.logInStatusReset:
-        return {
-          ...state,
-          logInStatus: {
-            class: "info",
-            message: "",
-          }
-        }
+      };
+    case actionTypes.logInStatusReset:
+      return {
+        ...state,
+        logInStatus: {
+          class: "info",
+          message: "",
+        },
+      };
     case actionTypes.loggedOut:
       return {
         ...state,
@@ -98,24 +98,28 @@ const user = (state = initialState, action) => {
         email: "",
         favorites: [],
         token: null,
-      }
+      };
     case actionTypes.addFavorite:
       return {
         ...state,
         favorites: [...state.favorites, action.payload.favorite],
-      }
+      };
     case actionTypes.removeFavorite:
       return {
         ...state,
-        favorites: [...state.favorites.filter(favorite=>favorite!==action.payload.favorite)],
-      }
+        favorites: [
+          ...state.favorites.filter(
+            (favorite) => favorite.ID !== action.payload.favoriteID
+          ),
+        ],
+      };
     case actionTypes.getFavorites:
       return {
         ...state,
         favorites: action.payload.favorites,
-      }
+      };
     default:
       return state;
   }
-}
+};
 export default user;

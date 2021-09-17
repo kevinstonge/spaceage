@@ -24,7 +24,7 @@ export default function QueryResults() {
         if (r.status === 201) {
           dispatch({
             type: allActions.userActions.addFavorite,
-            payload: { favorite },
+            payload: { favorite: r.data.favorite },
           });
         } else {
           console.log("error adding favorite");
@@ -32,17 +32,19 @@ export default function QueryResults() {
       });
   };
   const removeFavorite = () => {
-    const favorite = queryResults[fullQueryForReact].query;
+    const favoriteID = favorites.filter(
+      (f) => queryResults[fullQueryForReact].query === f.QueryString
+    )[0].ID;
     xhr
       .delete("/users/favorites/remove", {
-        data: { favorite },
+        data: { favoriteID },
         headers: { authorization: `Bearer ${token}` },
       })
       .then((r) => {
         if (r.status === 200) {
           dispatch({
             type: allActions.userActions.removeFavorite,
-            payload: { favorite },
+            payload: { favoriteID },
           });
         } else {
           console.log("error deleting favorite");
@@ -66,7 +68,9 @@ export default function QueryResults() {
             <div>
               <p>
                 results for query: "{queryResults[fullQueryForReact].query}"
-                {favorites.includes(queryResults[fullQueryForReact].query) ? (
+                {favorites
+                  .map((f) => f.QueryString)
+                  .includes(queryResults[fullQueryForReact].query) ? (
                   <button onClick={() => removeFavorite()}>
                     remove from favorites
                   </button>

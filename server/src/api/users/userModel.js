@@ -82,6 +82,7 @@ const getFavorites = async (userID) => {
 
 const addFavorite = async (userID, queryString) => {
   try {
+    let favoriteID = null;
     return await db
       .transaction(async (trx) => {
         await db("Favorites")
@@ -92,22 +93,35 @@ const addFavorite = async (userID, queryString) => {
         const [newFavorite] = await db("Favorites")
           .transacting(trx)
           .where({ QueryString: queryString });
-        if (newFavorite) {
+        favoriteID = newFavorite.ID;
+        if (favoriteID) {
           await db("User_Favorites")
             .transacting(trx)
-            .insert({ User_ID: userID, Favorite_ID: newFavorite.ID })
-            .then(() => {
-              return { status: 201, json: { message: "favorite added" } };
-            })
-            .catch((e) => {
-              throw e;
-            });
+            .insert({ User_ID: userID, Favorite_ID: favoriteID });
+          // .then(() => {
+          //   return {
+          //     status: 201,
+          //     json: {
+          //       message: "favorite added",
+          //       favorite: { ID: newFavorite.ID, QueryString: queryString },
+          //     },
+          //   };
+          // })
+          // .catch((e) => {
+          //   throw e;
+          // });
         } else {
           throw "failed to create favorite";
         }
       })
       .then((r) => {
-        return { status: 201, json: { message: "favorite added" } };
+        return {
+          status: 201,
+          json: {
+            message: "favorite added",
+            favorite: { ID: favoriteID, QueryString: queryString },
+          },
+        };
       })
       .catch((e) => {
         return {

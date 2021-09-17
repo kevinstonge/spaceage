@@ -27,7 +27,16 @@ const Favorites = () => {
   const deleteFavorite = (id) => {
     xhrAuth(token)
       .delete("/users/favorites/remove", { data: { favoriteID: id } })
-      .then((r) => console.log(r))
+      .then((r) => {
+        if (r.status === 200) {
+          dispatch({
+            type: allActions.userActions.removeFavorite,
+            payload: { favoriteID: id },
+          });
+        } else {
+          console.log("error deleting favorite");
+        }
+      })
       .catch((e) => console.log(e));
   };
   return (
@@ -58,6 +67,7 @@ const Favorites = () => {
                 </div>
               );
             })}
+            {user.favorites.length === 0 && <p>no favorites</p>}
           </div>
         </Modal>
       )}
