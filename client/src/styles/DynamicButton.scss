@@ -1,0 +1,44 @@
+@import "../styles/base.scss";
+.buttonLoading {
+  color: $e3;
+  .d {
+    position: relative;
+    animation-name: bouncingDot;
+    animation-duration: 0.7s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+  .d1 {
+    animation-delay: 0.1s;
+  }
+  .d2 {
+    animation-delay: 0.2s;
+  }
+  .d3 {
+    animation-delay: 0.3s;
+  }
+  .d4 {
+    animation-delay: 0.5s;
+  }
+  .d5 {
+    animation-delay: 0.6s;
+  }
+  .d6 {
+    animation-delay: 0.7s;
+  }
+}
+
+@keyframes bouncingDot {
+  0% {
+    top: -0.3rem;
+  }
+  25% {
+    top: 0;
+  }
+  75% {
+    top: 0;
+  }
+  100% {
+    top: -0.3rem;
+  }
+}
