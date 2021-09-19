@@ -15,7 +15,7 @@ const signup = async (userObject) => {
         };
       } else {
         const pwHash = bcrypt.hashSync(password, 7);
-        await db("Users").insert({ email, password: pwHash });
+        await db("Users").insert({ "Email": email, "Password": pwHash });
         const [newUser] = await db("Users").where({ Email: email });
         if (newUser) {
           const token = jwt.sign(
